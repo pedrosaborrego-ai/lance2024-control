@@ -326,15 +326,22 @@ textarea.form-ctrl{resize:vertical;min-height:80px;}
         <svg fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 16 16"><circle cx="6" cy="4" r="2.5"/><path d="M1 13c0-2.5 2.2-4.5 5-4.5"/><path d="M10 9v4m-2-2h4"/></svg>
         Alta de operarios
       </div>
+      <div class="nav-item" onclick="showPage('asistente')" id="ni-asistente">
+        <svg fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M6 6.5c0-1.1.9-2 2-2s2 .9 2 2c0 .8-.5 1.5-1.2 1.8L8 9v1"/><circle cx="8" cy="11.5" r=".5" fill="currentColor"/></svg>
+        Asistente IA
+      </div>
     </nav>
     <div class="sb-footer">
       <div class="sb-user">
         <div class="sb-avatar">JM</div>
         <div>
-          <div class="sb-user-name">Encargado</div>
-          <div class="sb-user-role">Construcciones Lance</div>
+          <div class="sb-user-name">Juan Manuel Pedrosa</div>
+          <div class="sb-user-role">Encargado · Lance 2024</div>
         </div>
       </div>
+      <button onclick="sendResumenWA()" style="width:100%;margin-top:6px;padding:8px;background:rgba(37,211,102,.15);border:1px solid rgba(37,211,102,.3);border-radius:8px;color:#25d366;font-size:10px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;">
+        📱 Resumen a mi WhatsApp
+      </button>
       <button class="sb-logout" onclick="logout()">↩ Cerrar sesión</button>
     </div>
   </aside>
@@ -690,7 +697,43 @@ textarea.form-ctrl{resize:vertical;min-height:80px;}
 </div><!-- /app -->
 
 <!-- MODAL WP -->
-<div class="overlay" id="wp-overlay">
+    <!-- ASISTENTE IA -->
+    <div class="page" id="page-asistente">
+      <div style="max-width:700px;margin:0 auto;">
+        <div class="card">
+          <div class="card-hdr">
+            <div class="card-title">🤖 Asistente IA — ObraControl GPS</div>
+            <span style="font-size:10px;color:var(--text3)">Juan Manuel Pedrosa · +34609321585</span>
+          </div>
+          <div style="padding:16px;max-height:420px;overflow-y:auto;" id="chat-messages">
+            <div style="background:var(--blue-light);border-radius:12px 12px 12px 0;padding:12px 16px;margin-bottom:10px;max-width:85%;font-size:13px;color:var(--text);">
+              👋 Hola Juan Manuel! Soy tu asistente de ObraControl GPS.<br><br>
+              Puedo ayudarte con:<br>
+              • <strong>¿Quién no ha fichado hoy?</strong><br>
+              • <strong>¿Cuántos operarios están en obra?</strong><br>
+              • <strong>Resumen del día</strong><br>
+              • <strong>¿Quién llegó tarde?</strong><br>
+              • <strong>Enviar resumen por WhatsApp</strong>
+            </div>
+          </div>
+          <div style="padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px;">
+            <input class="form-ctrl" id="chat-input" placeholder="Escribe tu pregunta..." onkeydown="if(event.key==='Enter') sendChat()" style="flex:1;">
+            <button onclick="sendChat()" style="padding:10px 16px;background:var(--blue2);color:#fff;border:none;border-radius:9px;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;cursor:pointer;">Enviar</button>
+          </div>
+          <!-- Acciones rápidas -->
+          <div style="padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px;flex-wrap:wrap;">
+            <button onclick="quickChat('¿Quién no ha fichado hoy?')" style="padding:6px 12px;background:var(--bg);border:1px solid var(--border);border-radius:20px;font-size:11px;cursor:pointer;color:var(--text2);">¿Quién no fichó?</button>
+            <button onclick="quickChat('¿Cuántos están en obra?')" style="padding:6px 12px;background:var(--bg);border:1px solid var(--border);border-radius:20px;font-size:11px;cursor:pointer;color:var(--text2);">¿Cuántos en obra?</button>
+            <button onclick="quickChat('Resumen del día')" style="padding:6px 12px;background:var(--bg);border:1px solid var(--border);border-radius:20px;font-size:11px;cursor:pointer;color:var(--text2);">Resumen del día</button>
+            <button onclick="quickChat('¿Quién llegó tarde?')" style="padding:6px 12px;background:var(--bg);border:1px solid var(--border);border-radius:20px;font-size:11px;cursor:pointer;color:var(--text2);">¿Quién llegó tarde?</button>
+            <button onclick="sendResumenWA()" style="padding:6px 12px;background:#DCFCE7;border:1px solid rgba(22,163,74,.25);border-radius:20px;font-size:11px;cursor:pointer;color:var(--green);font-weight:600;">📱 Enviar a mi WA</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main-content -->
+</div><!-- /app -->
   <div class="modal">
     <div class="modal-hdr"><span style="font-size:24px">💬</span><div><div class="modal-title">ENVIAR WHATSAPP</div><div style="font-size:10px;color:rgba(255,255,255,.6)">Construcciones Lance 2024 SL</div></div></div>
     <div class="modal-body">
@@ -836,7 +879,7 @@ function tick(){
 setInterval(tick,1000); tick();
 
 // ── PAGES ──
-const TITLES={dashboard:'Dashboard',jornada:'Resumen de jornada',operarios:'Operarios',alertas:'Alertas',extras:'Horas extras',horas:'Horas trabajadas',tareas:'Tareas',whatsapp:'WhatsApp',gestion:'Alta de operarios'};
+const TITLES={dashboard:'Dashboard',jornada:'Resumen de jornada',operarios:'Operarios',alertas:'Alertas',extras:'Horas extras',horas:'Horas trabajadas',tareas:'Tareas',whatsapp:'WhatsApp',gestion:'Alta de operarios',asistente:'Asistente IA'};
 function showPage(name){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
@@ -1191,6 +1234,100 @@ function resolveAlert(id){
   if(cnt) cnt.textContent=Math.max(0,parseInt(cnt.textContent)-1);
   if(kv)  kv.textContent =Math.max(0,parseInt(kv.textContent)-1);
   showToast('✓ Alerta resuelta','ok');
+}
+
+// ── ASISTENTE IA ──
+const ENCARGADO_WA = '+34609321585';
+
+function quickChat(msg){
+  document.getElementById('chat-input').value = msg;
+  sendChat();
+}
+
+function sendChat(){
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim();
+  if(!msg) return;
+  input.value = '';
+  addChatMsg(msg, 'user');
+  setTimeout(()=>{ addChatMsg(responderAsistente(msg), 'bot'); }, 600);
+}
+
+function addChatMsg(txt, who){
+  const msgs = document.getElementById('chat-messages');
+  if(!msgs) return;
+  const div = document.createElement('div');
+  div.style.cssText = who==='user'
+    ? 'background:var(--blue2);color:#fff;border-radius:12px 12px 0 12px;padding:10px 14px;margin-bottom:10px;max-width:85%;margin-left:auto;font-size:13px;'
+    : 'background:var(--blue-light);border-radius:12px 12px 12px 0;padding:12px 16px;margin-bottom:10px;max-width:85%;font-size:13px;color:var(--text);';
+  div.innerHTML = txt;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function responderAsistente(msg){
+  const q = msg.toLowerCase();
+  const hoy = DAYS_CAP[new Date().getDay()];
+  const enObra = WORKERS.filter(w=>w.status==='in');
+  const sinFichar = WORKERS.filter(w=>w.status==='pending');
+  const tarde = WORKERS.filter(w=>w.arrival && w.arrival>'08:15' && w.status!=='pending');
+  const fuera = WORKERS.filter(w=>w.status==='out');
+
+  if(q.includes('no ha fichado')||q.includes('sin fichar')||q.includes('no fichó')){
+    if(!sinFichar.length) return '✅ Todos los operarios han fichado hoy.';
+    return `❌ <strong>${sinFichar.length} operarios sin fichar:</strong><br>${sinFichar.map(w=>`• ${w.nombre} ${w.apellidos}`).join('<br>')}`;
+  }
+  if(q.includes('cuántos')||q.includes('en obra')){
+    return `📍 <strong>${enObra.length} operarios en obra</strong> ahora mismo.<br>${enObra.map(w=>`• ${w.nombre} ${w.apellidos}`).join('<br>')}`;
+  }
+  if(q.includes('tarde')||q.includes('retraso')){
+    if(!tarde.length) return '✅ Nadie llegó tarde hoy.';
+    return `⏰ <strong>${tarde.length} con retraso:</strong><br>${tarde.map(w=>`• ${w.nombre} ${w.apellidos} — entrada ${w.arrival}`).join('<br>')}`;
+  }
+  if(q.includes('resumen')){
+    const total = WORKERS.length;
+    const horas = WORKERS.reduce((a,w)=>a+w.h,0).toFixed(1);
+    return `📊 <strong>Resumen de hoy — ${hoy}</strong><br><br>
+      👷 Total plantilla: ${total}<br>
+      ✅ En obra: ${enObra.length}<br>
+      ❌ Sin fichar: ${sinFichar.length}<br>
+      🔴 Fuera de zona: ${fuera.length}<br>
+      ⏰ Con retraso: ${tarde.length}<br>
+      ⏱ Horas acumuladas: ${horas}h<br><br>
+      <em>¿Envío este resumen a tu WhatsApp?</em>`;
+  }
+  if(q.includes('whatsapp')||q.includes('enviar')){
+    sendResumenWA();
+    return '📱 Abriendo WhatsApp con el resumen del día...';
+  }
+  if(q.includes('hola')||q.includes('buenos')){
+    return `¡Buenos días Juan Manuel! 👋<br>Hoy es ${hoy}. Tienes <strong>${enObra.length} operarios en obra</strong> y <strong>${sinFichar.length} sin fichar</strong>.`;
+  }
+  return `No entiendo bien la pregunta. Prueba con:<br>
+    • "¿Quién no ha fichado?"<br>
+    • "¿Cuántos están en obra?"<br>
+    • "Resumen del día"<br>
+    • "¿Quién llegó tarde?"`;
+}
+
+function sendResumenWA(){
+  const hoy = DAYS_CAP[new Date().getDay()];
+  const enObra = WORKERS.filter(w=>w.status==='in');
+  const sinFichar = WORKERS.filter(w=>w.status==='pending');
+  const tarde = WORKERS.filter(w=>w.arrival && w.arrival>'08:15');
+  const horas = WORKERS.reduce((a,w)=>a+w.h,0).toFixed(1);
+  const msg = encodeURIComponent(
+    `🏗️ *OBRACONTROL GPS — RESUMEN ${hoy.toUpperCase()}*\n`+
+    `📅 ${new Date().toLocaleDateString('es-ES',{day:'2-digit',month:'long',year:'numeric'})}\n\n`+
+    `👷 Plantilla: ${WORKERS.length} operarios\n`+
+    `✅ En obra: ${enObra.length}\n`+
+    `❌ Sin fichar: ${sinFichar.length}${sinFichar.length?'\n'+sinFichar.map(w=>`   • ${w.nombre} ${w.apellidos}`).join('\n'):''}\n`+
+    `⏰ Con retraso: ${tarde.length}\n`+
+    `⏱ Horas acumuladas: ${horas}h\n\n`+
+    `_construcciones LANCE 2024 SL · ObraControl GPS_`
+  );
+  window.open(`https://wa.me/${ENCARGADO_WA}?text=${msg}`,'_blank');
+  showToast('📱 Abriendo WhatsApp...','ok');
 }
 
 // ── TOAST ──
