@@ -1329,8 +1329,7 @@ function resolveAlert(id){
   const cnt=document.getElementById('alert-count');
   const kv=document.getElementById('kv-alerts');
   if(cnt) cnt.textContent=Math.max(0,parseInt(cnt.textContent)-1);
-  if(kv)  kv.textContent =Math.max(0,parseInt(kv.textContent)-1);
-  showToast('✓ Alerta resuelta','ok');
+  if(kv)  kv.textContent =Math.max(0,parseInt(kv.textContent)-1);  showToast('✓ Alerta resuelta','ok');
 }
 
 // ── ASISTENTE IA ──
@@ -1426,6 +1425,7 @@ function sendResumenWA(){
   window.open(`https://wa.me/${ENCARGADO_WA}?text=${msg}`,'_blank');
   showToast('📱 Abriendo WhatsApp...','ok');
 }
+
 // ── TOAST ──
 function showToast(msg,type='ok'){
   const t=document.getElementById('toast');
