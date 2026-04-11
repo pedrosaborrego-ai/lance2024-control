@@ -847,7 +847,7 @@ function startFirebaseListener(){
   const today = new Date().toISOString().split('T')[0];
   // Poll cada 15 segundos
   loadFirebaseData();
-  setInterval(loadFirebaseData, 15000);
+  setInterval(loadFirebaseData, 5000);
 }
 
 function loadFirebaseData(){
@@ -855,25 +855,41 @@ function loadFirebaseData(){
     .then(r=>r.json())
     .then(data=>{
       if(!data) return;
-      Object.values(data).forEach(op=>{
+      Object.entries(data).forEach(([fbKey, op])=>{
         if(!op||!op.nombre) return;
         // Ignorar si fue eliminado
         if(isDeleted(op.nombre)) return;
-        // Buscar operario existente
-        let w = WORKERS.find(w=>
-          `${w.nombre} ${w.apellidos}`.toLowerCase().replace(/\s+/g,'_') ===
-          op.nombre.toLowerCase().replace(/\s+/g,'_') ||
-          `${w.nombre} ${w.apellidos}`.toLowerCase().includes(op.nombre.toLowerCase().split('_')[0])
-        );
+        
+        // Buscar operario existente — primero por DNI/NIE si disponible
+        let w = null;
+        if(op.doc){
+          const docClean = op.doc.replace(/[^A-Z0-9]/gi,'').toUpperCase();
+          w = WORKERS.find(x=> 
+            (x.dni && x.dni.replace(/[^A-Z0-9]/gi,'').toUpperCase() === docClean) ||
+            (x.nie && x.nie.replace(/[^A-Z0-9]/gi,'').toUpperCase() === docClean)
+          );
+        }
+        
+        // Si no encontró por DNI, buscar por nombre
+        if(!w){
+          const fbName = op.nombre.toLowerCase().replace(/[_\s]+/g,' ').trim();
+          w = WORKERS.find(x=>{
+            const wName = `${x.nombre} ${x.apellidos}`.toLowerCase().trim();
+            return wName === fbName || 
+                   wName.includes(fbName.split(' ')[0]) ||
+                   fbName.includes(wName.split(' ')[0]);
+          });
+        }
+
         // Si no existe, añadirlo dinámicamente
         if(!w){
-          const parts = op.nombre.replace(/_/g,' ').split(' ');
+          const nameParts = op.nombre.replace(/_/g,' ').split(' ');
           const newId = Math.max(0,...WORKERS.map(x=>x.id))+1;
           w = {
             id: newId,
-            nombre: parts[0]||op.nombre,
-            apellidos: parts.slice(1).join(' ')||'',
-            dni:'', nie:'',
+            nombre: nameParts[0]||op.nombre,
+            apellidos: nameParts.slice(1).join(' ')||'',
+            dni: op.doc||'', nie:'',
             obra: op.ciudad||'',
             pin:'----',
             status:'pending',
@@ -881,6 +897,7 @@ function loadFirebaseData(){
           };
           WORKERS.push(w);
         }
+        
         // Actualizar estado
         w.status = op.activo ? 'in' : 'out';
         if(op.tipo==='entrada'){
@@ -889,17 +906,24 @@ function loadFirebaseData(){
         } else if(op.tipo==='salida'){
           w.dep = op.hora;
         }
-        if(op.ciudad) w.obra = op.ciudad+', '+( op.provincia||'');
+        if(op.ciudad) w.obra = op.ciudad+', '+(op.provincia||'');
       });
-      // Actualizar KPIs y vistas
+      
+      // Actualizar KPIs
       const enObra = WORKERS.filter(w=>w.status==='in').length;
-      const kvIn = document.getElementById('kv-in');
-      if(kvIn) kvIn.textContent = enObra;
+      const sinFichar = WORKERS.filter(w=>w.status==='pending').length;
       animKPI('kv-total', WORKERS.length);
-      // Refrescar tabla si está visible
+      animKPI('kv-in', enObra);
+      
+      // Refrescar tablas si están visibles
       if(document.getElementById('page-jornada').classList.contains('active')) renderJornada();
       if(document.getElementById('page-operarios').classList.contains('active')) renderWorkers();
+      if(document.getElementById('page-dashboard').classList.contains('active')){
+        animKPI('kv-total', WORKERS.length);
+        animKPI('kv-in', enObra);
+      }
       showFirebaseBadge(Object.keys(data).length);
+      saveW();
     })
     .catch(e=>console.log('Firebase read error:',e));
 }
