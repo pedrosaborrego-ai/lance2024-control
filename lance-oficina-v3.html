@@ -756,80 +756,69 @@ const JORNADA = {
 const DAYS=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
 const DAYS_CAP=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
 
-// ── WORKERS DATA ──
-let WORKERS = [
-  {id:1,nombre:'Andrei',apellidos:'Popescu',    dni:'',  nie:'X1234567A',obra:'Obra A · Calle Major 45, Lleida',    pin:'1234',status:'in',     arrival:'07:45',dep:null,   dist:12,  h:7.5,extras:0},
-  {id:2,nombre:'Mohamed',apellidos:'Amine',     dni:'',  nie:'X2345678B',obra:'Obra A · Calle Major 45, Lleida',    pin:'2345',status:'in',     arrival:'08:00',dep:null,   dist:28,  h:7.2,extras:0},
-  {id:3,nombre:'Ioan',   apellidos:'Stoica',    dni:'',  nie:'X3456789C',obra:'Obra B · Avda. Prat de la Riba, Lleida',pin:'3456',status:'in',  arrival:'07:50',dep:null,   dist:45,  h:7.4,extras:0},
-  {id:4,nombre:'Carlos', apellidos:'Méndez',   dni:'12345678A',nie:'',obra:'Obra A · Calle Major 45, Lleida',       pin:'4567',status:'in',     arrival:'07:30',dep:null,   dist:60,  h:7.8,extras:0},
-  {id:5,nombre:'Petre',  apellidos:'Dinu',      dni:'',  nie:'X5678901E',obra:'Obra B · Avda. Prat de la Riba, Lleida',pin:'5678',status:'out', arrival:'07:55',dep:'14:30',dist:820, h:6.5,extras:0},
-  {id:6,nombre:'Younes', apellidos:'Khalil',    dni:'',  nie:'X6789012F',obra:'Obra A · Calle Major 45, Lleida',    pin:'6789',status:'in',     arrival:'07:40',dep:null,   dist:5,   h:7.6,extras:0},
-  {id:7,nombre:'Vasile', apellidos:'Munteanu',  dni:'',  nie:'X7890123G',obra:'Obra C · Carrer Sant Joan, Lleida',  pin:'7890',status:'in',     arrival:'08:05',dep:null,   dist:38,  h:7.1,extras:0},
-  {id:8,nombre:'Said',   apellidos:'Bouhssine', dni:'',  nie:'X8901234H',obra:'Obra A · Calle Major 45, Lleida',    pin:'8901',status:'pending',arrival:null,   dep:null,   dist:null,h:0,  extras:0},
-  {id:9,nombre:'Luis',apellidos:'Campaña',dni:'98765432B',nie:'',obra:'',pin:'9999',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:10,nombre:'ABOUBACAR',apellidos:'COULIBAL',dni:'',nie:'Z2227297M',obra:'',pin:'1001',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:11,nombre:'SAMBALI',apellidos:'SIDIBE',dni:'',nie:'Z2087681E',obra:'',pin:'1002',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:12,nombre:'MARINO',apellidos:'ARTURO CARBONERO MARIN',dni:'',nie:'Z2905816R',obra:'',pin:'1003',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:13,nombre:'YOUNIU',apellidos:'BA',dni:'',nie:'Z1389355E',obra:'',pin:'1004',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:14,nombre:'MOCTAR',apellidos:'DIALLO',dni:'',nie:'Z2432344F',obra:'',pin:'1005',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:15,nombre:'MIGUEL',apellidos:'ANTONIO DELGADO MOGOLLON',dni:'',nie:'Z0775871V',obra:'',pin:'1006',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:16,nombre:'MADI',apellidos:'OUEDRAOGO',dni:'',nie:'Z2541738J',obra:'',pin:'1007',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:17,nombre:'MOCTAR',apellidos:'DIALLO',dni:'',nie:'Z2885247V',obra:'',pin:'1008',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:18,nombre:'MOUSSA',apellidos:'MARIKO',dni:'',nie:'Z2496017Q',obra:'',pin:'1009',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:19,nombre:'ADAMA',apellidos:'MAGASSOUBA',dni:'',nie:'Z3025175J',obra:'',pin:'1010',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:20,nombre:'BIRAIMA',apellidos:'DEMBELE',dni:'',nie:'Z3132159R',obra:'',pin:'1011',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:21,nombre:'ABDOULAYE',apellidos:'SAMOURA',dni:'',nie:'Z2464767T',obra:'',pin:'1012',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:22,nombre:'MAMADOU',apellidos:'DRAME',dni:'',nie:'Z3496134R',obra:'',pin:'1013',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:23,nombre:'ENRIQUE',apellidos:'BERBMUDEZ MUÑOZ',dni:'74886842S',nie:'',obra:'',pin:'1014',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:24,nombre:'ANTONIA',apellidos:'SANCHEZ RAMIREZ',dni:'48861968D',nie:'',obra:'',pin:'1015',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:25,nombre:'CHERIF',apellidos:'CHAKA',dni:'',nie:'X5710001K',obra:'',pin:'1016',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:26,nombre:'OUSMANE',apellidos:'SAMASSA',dni:'',nie:'Z2465081S',obra:'',pin:'1017',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:27,nombre:'CLAUDIOMAR',apellidos:'SALVINO LARANJEIRA',dni:'',nie:'Y7972853D',obra:'',pin:'1018',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:28,nombre:'MALLE',apellidos:'SUMARE',dni:'',nie:'X6747550V',obra:'',pin:'1019',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:29,nombre:'MAHAMADOU',apellidos:'DEMBELE',dni:'',nie:'Z1151223D',obra:'',pin:'1020',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:30,nombre:'MOHAMED',apellidos:'MESSATY',dni:'',nie:'X4052512G',obra:'',pin:'1021',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:31,nombre:'AHMED',apellidos:'KAOUCH',dni:'',nie:'X4136902F',obra:'',pin:'1022',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:32,nombre:'MOUSTAPHA',apellidos:'EL JABOUKI',dni:'',nie:'X7053778T',obra:'',pin:'1023',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:33,nombre:'SISSOKO',apellidos:'MAKAN',dni:'',nie:'Y0080376M',obra:'',pin:'1024',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:34,nombre:'KANDIA',apellidos:'MADY DANSOKO',dni:'',nie:'Z2228046H',obra:'',pin:'1025',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:35,nombre:'SEGA',apellidos:'KANOUTE',dni:'',nie:'Z2602977A',obra:'',pin:'1026',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:36,nombre:'HAMID',apellidos:'BENOUABI',dni:'',nie:'X4038559N',obra:'',pin:'1027',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:37,nombre:'SOUNKAROU',apellidos:'SISSAKO',dni:'',nie:'Z2079444L',obra:'',pin:'1028',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:38,nombre:'SALIFOU',apellidos:'KANOUTE',dni:'',nie:'Z2769445C',obra:'',pin:'1029',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:39,nombre:'ANTONIO',apellidos:'DIEZ MARTIN',dni:'52867906Z',nie:'',obra:'',pin:'1030',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:40,nombre:'ATOU',apellidos:'MBAYE',dni:'',nie:'X5911602G',obra:'',pin:'1031',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:41,nombre:'MOUHANMADOU',apellidos:'LAMINOU',dni:'',nie:'X6848064K',obra:'',pin:'1032',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:42,nombre:'SAMBA',apellidos:'DIAWARA',dni:'',nie:'X7499375H',obra:'',pin:'1033',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:43,nombre:'IBRAHIMA',apellidos:'FALL',dni:'',nie:'Y0544270N',obra:'',pin:'1034',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:44,nombre:'NNAMDI',apellidos:'PASCAL OUTADIMMA',dni:'',nie:'Y2672636G',obra:'',pin:'1035',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:45,nombre:'HUGES',apellidos:'FOBASSO DJOU',dni:'',nie:'Y1866061Q',obra:'',pin:'1036',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:46,nombre:'CARLOS',apellidos:'ENRIQUE OJEDA ZABALLOS',dni:'06641160W',nie:'',obra:'',pin:'1037',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:47,nombre:'OUSMANE',apellidos:'GUEYE',dni:'',nie:'Y3761748C',obra:'',pin:'1038',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:48,nombre:'JEAN',apellidos:'ANTHONY ALVEREZ GUTIERREZ',dni:'',nie:'Y7769211D',obra:'',pin:'1039',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:49,nombre:'ABOU',apellidos:'MBENGUE',dni:'',nie:'Y7601402P',obra:'',pin:'1040',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:50,nombre:'MAMADOU',apellidos:'SIDIBE',dni:'',nie:'Y6882587N',obra:'',pin:'1041',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:51,nombre:'MIRACLE',apellidos:'BENJAMIN',dni:'',nie:'Y8496596L',obra:'',pin:'1042',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:52,nombre:'MOHAMED',apellidos:'ISHMY BANGURA',dni:'',nie:'Z1700431T',obra:'',pin:'1043',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:53,nombre:'AROUNA',apellidos:'OUTTARA',dni:'',nie:'Y9310474L',obra:'',pin:'1044',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:54,nombre:'BABACAR',apellidos:'DIONE',dni:'',nie:'Z1193232C',obra:'',pin:'1045',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:55,nombre:'BABA',apellidos:'FANE',dni:'',nie:'Z1568134E',obra:'',pin:'1046',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:56,nombre:'ESPERANZA MACARENA',apellidos:'GATA GATA',dni:'29443169H',nie:'',obra:'',pin:'1047',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:57,nombre:'ANTONIO',apellidos:'DIAZ CELADA',dni:'77541275H',nie:'',obra:'',pin:'1048',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:58,nombre:'JORGE',apellidos:'GONZALEZ HERNANDEZ',dni:'47393211D',nie:'',obra:'',pin:'1049',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:59,nombre:'BASILIO',apellidos:'FLORES PARRA',dni:'47210626K',nie:'',obra:'',pin:'1050',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:60,nombre:'JUAN ANTONIO',apellidos:'GOMEZ RAMIREZ',dni:'34357215E',nie:'',obra:'',pin:'1051',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:61,nombre:'MANUEL',apellidos:'SANCHEZ LONGARES',dni:'29535990B',nie:'',obra:'',pin:'1052',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:62,nombre:'TATARU',apellidos:'DORINA',dni:'',nie:'X8951693R',obra:'',pin:'1053',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-  {id:63,nombre:'WILINSTON GERMAN',apellidos:'PEREZ SANCLAIR',dni:'',nie:'Z1707702A',obra:'',pin:'1054',status:'pending',arrival:null,dep:null,dist:null,h:0,extras:0},
-];
+// ── WORKERS DATA — Se cargan desde Firebase ──
+let WORKERS = [];
 // Reset solo si URL tiene ?reset=1 (uso manual)
 if(new URLSearchParams(window.location.search).get('reset')==='1'){
   localStorage.removeItem('lance_workers_v2');
   localStorage.removeItem('lance_deleted_keys');
   history.replaceState(null,'',window.location.pathname);
 }
-try{ const s=localStorage.getItem('lance_workers_v2'); if(s) WORKERS=JSON.parse(s); }catch(e){}
+try{ const s=localStorage.getItem('lance_workers_v2'); if(s){ WORKERS=JSON.parse(s); } }catch(e){}
 function saveW(){ try{ localStorage.setItem('lance_workers_v2',JSON.stringify(WORKERS)); }catch(e){} }
+
+// Cargar operarios desde Firebase al iniciar
+function loadWorkersFromFirebase(){
+  fetch(`${FB_URL}/operarios_registro.json`)
+    .then(r=>r.json())
+    .then(data=>{
+      if(!data) return;
+      const fbWorkers = [];
+      let id = 1;
+      Object.entries(data).forEach(([key, op])=>{
+        if(!op || !op.nombre) return;
+        // Comprobar si ya existe en WORKERS por DNI/NIE
+        const doc = op.dni || op.nie || key;
+        const exists = WORKERS.find(w=> 
+          (w.dni && w.dni.replace(/[^A-Z0-9]/gi,'').toUpperCase() === key.toUpperCase()) ||
+          (w.nie && w.nie.replace(/[^A-Z0-9]/gi,'').toUpperCase() === key.toUpperCase())
+        );
+        if(!exists){
+          fbWorkers.push({
+            id: 1000+id,
+            nombre: op.nombre||'',
+            apellidos: op.apellidos||'',
+            dni: op.dni||'',
+            nie: op.nie||'',
+            tel: op.tel||'',
+            obra: op.obra||'',
+            pin: op.pin||'----',
+            status: 'pending',
+            arrival: null, dep: null, dist: null, h: 0, extras: 0
+          });
+          id++;
+        }
+      });
+      if(fbWorkers.length){
+        WORKERS = [...WORKERS, ...fbWorkers];
+        // Deduplicar por DNI/NIE
+        const seen = new Set();
+        WORKERS = WORKERS.filter(w=>{
+          const doc = (w.dni||w.nie||'').toUpperCase();
+          if(!doc) return true;
+          if(seen.has(doc)) return false;
+          seen.add(doc);
+          return true;
+        });
+        // Reasignar IDs
+        WORKERS.forEach((w,i)=> w.id = i+1);
+        saveW();
+        animKPI('kv-total', WORKERS.length);
+        showToast(`✅ ${WORKERS.length} operarios cargados desde Firebase`,'ok');
+      }
+    })
+    .catch(e=>console.log('Error cargando operarios:',e));
+}
 
 let extras=[];
 const tasks=[];
@@ -1015,19 +1004,22 @@ function showPage(name){
 
 // ── INIT ──
 function initApp(){
-  animKPI('kv-total',WORKERS.length);
-  animKPI('kv-in',WORKERS.filter(w=>w.status==='in').length);
-  animKPI('kv-alerts',0);
-  animKPI('kv-extras',0);
-  renderTaskLog(); renderWP(); updateExtraSelect();
-  const sel=document.getElementById('task-to');
-  sel.innerHTML='<option value="all">Todos los operarios</option>';
-  WORKERS.forEach(w=>{ sel.innerHTML+=`<option>${w.nombre} ${w.apellidos}</option>`; });
-  document.getElementById('jornada-date').textContent=new Date().toLocaleDateString('es-ES',{weekday:'long',day:'2-digit',month:'long'});
-  // Iniciar conexión Firebase en tiempo real
-  startFirebaseListener();
-  // Sincronizar todos los operarios con Firebase
-  setTimeout(fbSyncAllWorkers, 2000);
+  // Cargar operarios desde Firebase
+  loadWorkersFromFirebase();
+  // Esperar un momento para que carguen y luego inicializar
+  setTimeout(()=>{
+    animKPI('kv-total',WORKERS.length);
+    animKPI('kv-in',WORKERS.filter(w=>w.status==='in').length);
+    animKPI('kv-alerts',0);
+    animKPI('kv-extras',0);
+    renderTaskLog(); renderWP(); updateExtraSelect();
+    const sel=document.getElementById('task-to');
+    sel.innerHTML='<option value="all">Todos los operarios</option>';
+    WORKERS.forEach(w=>{ sel.innerHTML+=`<option>${w.nombre} ${w.apellidos}</option>`; });
+    document.getElementById('jornada-date').textContent=new Date().toLocaleDateString('es-ES',{weekday:'long',day:'2-digit',month:'long'});
+    // Iniciar conexión Firebase en tiempo real
+    startFirebaseListener();
+  }, 1500);
 }
 
 // ── KPI ANIM ──
