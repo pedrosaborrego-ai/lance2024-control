@@ -1428,18 +1428,67 @@ function sendWaOperario(id){
 // ── TASKS ──
 function renderTaskLog(){
   const log=document.getElementById('task-log'); if(!log)return;
-  if(!tasks.length){ log.innerHTML='<div style="padding:24px;text-align:center;color:var(--text3);font-size:12px">Sin tareas enviadas aún.</div>'; return; }
-  log.innerHTML=[...tasks].reverse().map(t=>`<div class="wp-item"><div class="wp-av" style="background:linear-gradient(135deg,var(--blue),var(--blue3))">📋</div><div><div class="wp-n">${t.to}</div><div class="wp-m">${t.msg.slice(0,55)}${t.msg.length>55?'...':''}</div></div><div class="wp-t">${t.time}</div></div>`).join('');
+  // Leer tareas de Firebase
+  fetch(`${FB_URL}/tareas.json`)
+    .then(r=>r.json())
+    .then(data=>{
+      if(!data){
+        if(!tasks.length) log.innerHTML='<div style="padding:24px;text-align:center;color:var(--text3);font-size:12px">Sin tareas enviadas aún.</div>';
+        return;
+      }
+      const fbTasks = Object.values(data).sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
+      log.innerHTML=fbTasks.map(t=>`<div class="wp-item">
+        <div class="wp-av" style="background:linear-gradient(135deg,var(--blue),var(--blue3))">📋</div>
+        <div style="flex:1">
+          <div class="wp-n">${t.to||'Todos'}</div>
+          <div class="wp-m">${(t.msg||'').slice(0,55)}${(t.msg||'').length>55?'...':''}</div>
+          <div style="font-size:9px;color:${t.completada?'var(--green)':'var(--amber)'};margin-top:2px;">${t.completada?'✅ Completada':'⏳ Pendiente'}</div>
+        </div>
+        <div class="wp-t">${t.time||''}<br><span style="font-size:9px">${t.fecha||''}</span></div>
+      </div>`).join('');
+    })
+    .catch(()=>{
+      if(!tasks.length) log.innerHTML='<div style="padding:24px;text-align:center;color:var(--text3);font-size:12px">Sin tareas enviadas aún.</div>';
+    });
 }
 function sendTask(){
   const to=document.getElementById('task-to');
+  const prio=document.getElementById('task-prio');
   const msg=document.getElementById('task-msg').value.trim();
-  if(!msg)return;
-  const now=new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
-  tasks.push({to:to.options[to.selectedIndex].text,msg,time:now});
+  if(!msg){ showToast('Escribe la descripción de la tarea','err'); return; }
+  const now=new Date();
+  const timeStr=now.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
+  const dateStr=now.toISOString().split('T')[0];
+  const toName=to.options[to.selectedIndex].text;
+  const prioText=prio.options[prio.selectedIndex].text;
+  
+  const tareaData = {
+    to: toName,
+    msg: msg,
+    prioridad: prioText,
+    time: timeStr,
+    fecha: dateStr,
+    timestamp: now.getTime(),
+    enviadaPor: 'Oficina',
+    completada: false
+  };
+
+  // Guardar en Firebase
+  const tareaId = 'tarea_'+now.getTime();
+  fetch(`${FB_URL}/tareas/${tareaId}.json`, {
+    method: 'PUT',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify(tareaData)
+  }).then(()=>{
+    showToast(`✅ Tarea enviada a ${toName}`,'ok');
+    renderTaskLog();
+  }).catch(()=>{
+    showToast('⚠️ Error al enviar tarea','err');
+  });
+
+  // También guardar localmente
+  tasks.push({to:toName,msg,time:timeStr});
   document.getElementById('task-msg').value='';
-  renderTaskLog();
-  showToast('✅ Tarea enviada','ok');
 }
 
 // ── WP ──
