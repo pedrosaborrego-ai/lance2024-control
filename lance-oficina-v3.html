@@ -1411,7 +1411,7 @@ function sendWaAlta(){
   if(cleanPhone && !cleanPhone.startsWith('34')) cleanPhone = '34'+cleanPhone;
   const url = cleanPhone ? `https://wa.me/${cleanPhone}?text=${msg}` : `https://wa.me/?text=${msg}`;
   showToast(`📱 Abriendo WhatsApp...`,'ok');
-  setTimeout(()=>{ window.location.href = url; }, 500);
+  setTimeout(()=>{ window.open(url, '_blank'); }, 500);
 }
 
 function sendWaOperario(id){
@@ -1422,7 +1422,7 @@ function sendWaOperario(id){
   if(cleanPhone && !cleanPhone.startsWith('34')) cleanPhone = '34'+cleanPhone;
   const url = cleanPhone ? `https://wa.me/${cleanPhone}?text=${msg}` : `https://wa.me/?text=${msg}`;
   showToast(`📱 Abriendo WhatsApp para ${w.nombre}`,'ok');
-  setTimeout(()=>{ window.location.href = url; }, 500);
+  setTimeout(()=>{ window.open(url, '_blank'); }, 500);
 }
 
 // ── TASKS ──
