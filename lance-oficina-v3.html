@@ -249,7 +249,7 @@ textarea.form-ctrl{resize:vertical;min-height:80px;}
     <div style="background:#F4F7FC;border:1px solid #E2EAF4;border-radius:12px;padding:16px;margin-bottom:16px;">
       <div style="font-size:11px;color:#8FA5C0;margin-bottom:8px;">📞 Contacto:</div>
       <div style="font-size:14px;font-weight:700;color:#1A2840;">Juan Manuel Pedrosa</div>
-      <div style="font-size:12px;color:#2563AE;">pedrosaborrego@gmail.com</div>
+      <div style="font-size:12px;color:#2563AE;"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8dfde8e9ffe2feecefe2ffffe8eae2cdeae0ece4e1a3eee2e0">[email&#160;protected]</a></div>
       <div style="font-size:12px;color:#2563AE;">+34 609 321 585</div>
     </div>
     <div style="margin-bottom:12px;">
@@ -779,7 +779,7 @@ textarea.form-ctrl{resize:vertical;min-height:80px;}
 
 <div class="toast" id="toast"></div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ── SISTEMA DE LICENCIAS — CONSOLA OFICINA ──
 const FB_URL_LICENSE = 'https://lance-a99b4-default-rtdb.europe-west1.firebasedatabase.app';
 
@@ -1043,8 +1043,24 @@ function loadFirebaseData(){
         if(op.tipo==='entrada'){
           w.arrival = op.hora;
           w.dep = null;
+          // Calcular horas desde la entrada hasta ahora
+          if(op.hora){
+            const [eh,em] = op.hora.split(':').map(Number);
+            const now = new Date();
+            const mins = (now.getHours()*60+now.getMinutes()) - (eh*60+em);
+            w.h = mins>0 ? (mins/60).toFixed(1) : 0;
+          }
         } else if(op.tipo==='salida'){
           w.dep = op.hora;
+          // Calcular horas entre entrada y salida
+          const arrivaTime = op.hora_entrada || w.arrival;
+          if(arrivaTime && op.hora){
+            w.arrival = arrivaTime; // asegurar que queda guardado
+            const [eh,em] = arrivaTime.split(':').map(Number);
+            const [sh,sm] = op.hora.split(':').map(Number);
+            const mins = (sh*60+sm) - (eh*60+em);
+            w.h = mins>0 ? (mins/60).toFixed(1) : 0;
+          }
         }
         if(op.ciudad) w.obra = op.ciudad+', '+(op.provincia||'');
       });
@@ -1725,15 +1741,4 @@ function sendResumenWA(){
     `_construcciones LANCE 2024 SL · ObraControl GPS_`
   );
   window.open(`https://wa.me/${ENCARGADO_WA}?text=${msg}`,'_blank');
-  showToast('📱 Abriendo WhatsApp...','ok');
-}
-
-// ── TOAST ──
-function showToast(msg,type='ok'){
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.className=`toast show ${type}`;
-  setTimeout(()=>t.className='toast',3500);
-}
-</script>
-</body>
-</html>
+  showToast('📱 Abriendo WhatsApp...','ok'
