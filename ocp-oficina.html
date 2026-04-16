@@ -394,22 +394,69 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 
     <!-- ASISTENTE -->
     <div class="page" id="page-asistente">
-      <div style="max-width:660px;margin:0 auto;">
+      <div style="max-width:720px;margin:0 auto;">
         <div class="card">
-          <div class="chdr"><div class="ctitle">Asistente IA</div></div>
-          <div style="padding:14px;max-height:360px;overflow-y:auto;" id="chat-msgs">
-            <div class="cmsg-bot">Hola! Soy tu asistente. Preguntame sobre operarios, jornada o tareas.</div>
+          <div class="chdr"><div class="ctitle">Asistente IA — ObraControl Pro</div><span style="font-size:10px;color:var(--text3)">Pregunta sobre tu obra</span></div>
+          <div style="padding:14px;max-height:340px;overflow-y:auto;" id="chat-msgs">
+            <div class="cmsg-bot">
+              Hola! Soy tu asistente de obra. Puedo ayudarte con:<br><br>
+              <strong>Operarios:</strong> quien ficho, quien falta, retrasados<br>
+              <strong>Gremios:</strong> cuantos electricistas, pintores, fontaneros...<br>
+              <strong>Por obra:</strong> quien esta en cada obra asignada<br>
+              <strong>Reportes:</strong> incidencias y preguntas de operarios
+            </div>
           </div>
           <div style="padding:10px 14px;border-top:1px solid var(--border);display:flex;gap:8px;">
-            <input class="fctrl" id="chat-in" placeholder="Escribe..." onkeydown="if(event.key==='Enter')sendChat()" style="flex:1;">
-            <button onclick="sendChat()" style="padding:9px 14px;background:var(--gold);color:var(--verde);border:none;border-radius:8px;font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:1px;cursor:pointer;">ENVIAR</button>
+            <input class="fctrl" id="chat-in" placeholder="Escribe tu pregunta..." onkeydown="if(event.key==='Enter')sendChat()" style="flex:1;">
+            <button onclick="sendChat()" style="padding:9px 14px;background:linear-gradient(135deg,var(--verde2),var(--verde3));color:#fff;border:none;border-radius:8px;font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:1px;cursor:pointer;">ENVIAR</button>
           </div>
-          <div style="padding:8px 14px;border-top:1px solid var(--border);display:flex;gap:6px;flex-wrap:wrap;">
-            <button class="qbtn" onclick="qchat('Quien no ha fichado')">Sin fichar</button>
-            <button class="qbtn" onclick="qchat('Cuantos en obra')">En obra</button>
-            <button class="qbtn" onclick="qchat('Resumen del dia')">Resumen</button>
+          <!-- BOTONES RAPIDOS POR CATEGORIA -->
+          <div style="padding:10px 14px;border-top:1px solid var(--border);">
+            <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);margin-bottom:8px;">Consultas rapidas:</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+              <button class="qbtn" onclick="qchat('Quien no ha fichado hoy')">Sin fichar</button>
+              <button class="qbtn" onclick="qchat('Cuantos operarios estan en obra')">En obra</button>
+              <button class="qbtn" onclick="qchat('Resumen del dia')">Resumen</button>
+              <button class="qbtn" onclick="qchat('Quien llego tarde')">Retrasados</button>
+              <button class="qbtn" onclick="qchat('Ver incidencias de hoy')">Incidencias</button>
+            </div>
+            <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);margin-bottom:8px;">Por gremio:</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+              <button class="qbtn" style="background:rgba(200,168,75,.08);border-color:rgba(200,168,75,.3);color:var(--amber);" onclick="qchat('Cuantos albaniles hay en obra')">&#129521; Albaniles</button>
+              <button class="qbtn" style="background:rgba(200,168,75,.08);border-color:rgba(200,168,75,.3);color:var(--amber);" onclick="qchat('Cuantos electricistas hay en obra')">&#9889; Electricistas</button>
+              <button class="qbtn" style="background:rgba(200,168,75,.08);border-color:rgba(200,168,75,.3);color:var(--amber);" onclick="qchat('Cuantos pintores hay en obra')">&#127912; Pintores</button>
+              <button class="qbtn" style="background:rgba(200,168,75,.08);border-color:rgba(200,168,75,.3);color:var(--amber);" onclick="qchat('Cuantos fontaneros hay en obra')">&#128295; Fontaneros</button>
+              <button class="qbtn" style="background:rgba(200,168,75,.08);border-color:rgba(200,168,75,.3);color:var(--amber);" onclick="qchat('Cuantos cristaleros hay en obra')">&#128302; Cristaleros</button>
+              <button class="qbtn" style="background:rgba(200,168,75,.08);border-color:rgba(200,168,75,.3);color:var(--amber);" onclick="qchat('Cuantos soldadores hay en obra')">&#128293; Soldadores</button>
+              <button class="qbtn" style="background:rgba(200,168,75,.08);border-color:rgba(200,168,75,.3);color:var(--amber);" onclick="qchat('Cuantos gruistas hay en obra')">&#127981; Gruistas</button>
+              <button class="qbtn" style="background:rgba(200,168,75,.08);border-color:rgba(200,168,75,.3);color:var(--amber);" onclick="qchat('Resumen por gremios')">Todos los gremios</button>
+            </div>
+            <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);margin-bottom:8px;">Por obra:</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+              <button class="qbtn" style="background:var(--blue-l);border-color:rgba(27,79,140,.2);color:var(--blue);" onclick="mostrarPorObra()">&#127968; Ver operarios por obra</button>
+              <button class="qbtn" style="background:var(--blue-l);border-color:rgba(27,79,140,.2);color:var(--blue);" onclick="verReportesOperarios()">&#128172; Reportes de operarios</button>
+            </div>
           </div>
         </div>
+
+        <!-- PANEL REPORTES OPERARIOS -->
+        <div class="card" id="panel-reportes" style="display:none;">
+          <div class="chdr">
+            <div class="ctitle">Reportes e incidencias de operarios</div>
+            <button onclick="document.getElementById('panel-reportes').style.display='none'" style="font-size:10px;color:var(--text3);background:none;border:none;cursor:pointer;">Cerrar</button>
+          </div>
+          <div id="reportes-list" style="max-height:300px;overflow-y:auto;"></div>
+        </div>
+
+        <!-- PANEL POR OBRA -->
+        <div class="card" id="panel-obra" style="display:none;">
+          <div class="chdr">
+            <div class="ctitle">Operarios por obra</div>
+            <button onclick="document.getElementById('panel-obra').style.display='none'" style="font-size:10px;color:var(--text3);background:none;border:none;cursor:pointer;">Cerrar</button>
+          </div>
+          <div id="obra-list" style="max-height:300px;overflow-y:auto;padding:14px;"></div>
+        </div>
+
       </div>
     </div>
 
@@ -827,15 +874,42 @@ function sendTask() {
 }
 
 // CHAT IA
+var GREMIOS = {
+  albanil:     {label:'Albanil',      emoji:'&#129521;', keys:['albanil','albañil','peon','construccion']},
+  electricista:{label:'Electricista', emoji:'&#9889;',   keys:['electric']},
+  pintor:      {label:'Pintor',       emoji:'&#127912;', keys:['pintor','pintura']},
+  fontanero:   {label:'Fontanero',    emoji:'&#128295;', keys:['fontanero','fontaneria','plomero']},
+  cristalero:  {label:'Cristalero',   emoji:'&#128302;', keys:['cristalero','cristal','vidrio']},
+  soldador:    {label:'Soldador',     emoji:'&#128293;', keys:['soldador','soldadura']},
+  gruista:     {label:'Gruista',      emoji:'&#127981;', keys:['gruista','grua']},
+  carpintero:  {label:'Carpintero',   emoji:'&#128296;', keys:['carpintero','carpinteria']},
+  otros:       {label:'Otros',        emoji:'&#128119;', keys:['otro','industrial','subcontrata']}
+};
+
+function getGremioWorkers(gremioKey) {
+  var g = GREMIOS[gremioKey];
+  if (!g) return [];
+  return WORKERS.filter(function(w) {
+    var cat = (w.cat||'peon').toLowerCase();
+    var gremioW = (w.gremio||'').toLowerCase();
+    var nombre = (w.nombre + ' ' + w.apellidos).toLowerCase();
+    return g.keys.some(function(k) {
+      return cat.indexOf(k) >= 0 || gremioW.indexOf(k) >= 0;
+    });
+  });
+}
+
 function qchat(msg) { document.getElementById('chat-in').value = msg; sendChat(); }
+
 function sendChat() {
   var inp = document.getElementById('chat-in');
   var msg = inp.value.trim();
   if (!msg) return;
   inp.value = '';
   addMsg(msg, 'user');
-  setTimeout(function() { addMsg(responder(msg), 'bot'); }, 500);
+  setTimeout(function() { addMsg(responder(msg), 'bot'); }, 400);
 }
+
 function addMsg(txt, who) {
   var msgs = document.getElementById('chat-msgs');
   if (!msgs) return;
@@ -845,17 +919,208 @@ function addMsg(txt, who) {
   msgs.appendChild(div);
   msgs.scrollTop = msgs.scrollHeight;
 }
+
 function responder(msg) {
-  var q = msg.toLowerCase();
+  var q = msg.toLowerCase()
+    .replace(/albanil/g,'albanil')
+    .replace(/albañil/g,'albanil')
+    .replace(/fontaner/g,'fontanero')
+    .replace(/electr/g,'electricista')
+    .replace(/pintur/g,'pintor')
+    .replace(/cristal/g,'cristalero')
+    .replace(/solda/g,'soldador')
+    .replace(/grui/g,'gruista')
+    .replace(/carpin/g,'carpintero');
+
   var enObra = WORKERS.filter(function(w) { return w.status === 'in'; });
   var sinFichar = WORKERS.filter(function(w) { return w.status === 'pending'; });
-  if (q.indexOf('fich') >= 0 || q.indexOf('sin') >= 0)
-    return sinFichar.length ? (sinFichar.length + ' sin fichar: ' + sinFichar.map(function(w) { return w.nombre; }).join(', ')) : 'Todos han fichado';
-  if (q.indexOf('obra') >= 0 || q.indexOf('cuant') >= 0)
-    return enObra.length + ' en obra ahora: ' + enObra.map(function(w) { return w.nombre; }).join(', ');
-  if (q.indexOf('resum') >= 0)
-    return 'Total: ' + WORKERS.length + ' | En obra: ' + enObra.length + ' | Sin fichar: ' + sinFichar.length;
-  return 'Prueba: "Sin fichar", "Cuantos en obra", "Resumen"';
+  var tarde = WORKERS.filter(function(w) { return w.arrival && w.arrival > '08:15'; });
+
+  // Sin fichar
+  if (q.indexOf('fich') >= 0 || q.indexOf('falt') >= 0) {
+    if (!sinFichar.length) return '&#10003; Todos los operarios han fichado hoy.';
+    return '<strong>' + sinFichar.length + ' sin fichar:</strong><br>' +
+      sinFichar.map(function(w) { return '&#8226; ' + w.nombre + ' ' + w.apellidos + ' (' + (w.obra||'sin obra').split(',')[0] + ')'; }).join('<br>');
+  }
+
+  // Retrasados
+  if (q.indexOf('tard') >= 0 || q.indexOf('retra') >= 0) {
+    if (!tarde.length) return '&#10003; Nadie llego tarde hoy.';
+    return '<strong>' + tarde.length + ' con retraso:</strong><br>' +
+      tarde.map(function(w) { return '&#8226; ' + w.nombre + ' ' + w.apellidos + ' — entro a las ' + w.arrival; }).join('<br>');
+  }
+
+  // En obra
+  if (q.indexOf('obra') >= 0 && q.indexOf('cuant') >= 0 || q.indexOf('en obra') >= 0) {
+    if (!enObra.length) return 'No hay operarios fichados en este momento.';
+    return '<strong>' + enObra.length + ' en obra ahora:</strong><br>' +
+      enObra.map(function(w) { return '&#8226; ' + w.nombre + ' ' + w.apellidos; }).join('<br>');
+  }
+
+  // Gremios individuales
+  var gremioEncontrado = null;
+  Object.keys(GREMIOS).forEach(function(key) {
+    if (q.indexOf(key) >= 0) gremioEncontrado = key;
+  });
+  if (gremioEncontrado) {
+    var gw = WORKERS.filter(function(w) {
+      var cat = (w.cat||'peon').toLowerCase();
+      return cat === gremioEncontrado || (w.gremio||'').toLowerCase() === gremioEncontrado;
+    });
+    var gwEnObra = gw.filter(function(w) { return w.status === 'in'; });
+    var g = GREMIOS[gremioEncontrado];
+    if (!gw.length) return 'No hay ' + g.label + 's registrados en el sistema.';
+    return g.emoji + ' <strong>' + g.label + 's: ' + gw.length + ' registrados, ' + gwEnObra.length + ' en obra</strong><br>' +
+      gw.map(function(w) {
+        var st = w.status === 'in' ? '&#9989;' : w.status === 'out' ? '&#128308;' : '&#9200;';
+        return st + ' ' + w.nombre + ' ' + w.apellidos;
+      }).join('<br>');
+  }
+
+  // Todos los gremios
+  if (q.indexOf('gremio') >= 0 || q.indexOf('industrial') >= 0 || q.indexOf('todos') >= 0 && q.indexOf('gremio') >= 0) {
+    var resumen = '<strong>Resumen por gremios:</strong><br><br>';
+    var catCount = {};
+    WORKERS.forEach(function(w) {
+      var cat = w.cat || 'peon';
+      if (!catCount[cat]) catCount[cat] = {total:0, enObra:0};
+      catCount[cat].total++;
+      if (w.status === 'in') catCount[cat].enObra++;
+    });
+    var catLabels = {peon:'&#129521; Albanil/Peon', oficial:'&#128295; Oficial', encargado:'&#128084; Encargado'};
+    Object.keys(catCount).forEach(function(cat) {
+      resumen += (catLabels[cat]||cat) + ': <strong>' + catCount[cat].total + '</strong> (' + catCount[cat].enObra + ' en obra)<br>';
+    });
+    return resumen;
+  }
+
+  // Incidencias
+  if (q.indexOf('incidencia') >= 0 || q.indexOf('reporte') >= 0) {
+    cargarIncidencias();
+    return 'Cargando incidencias de hoy... Mira el panel que acaba de aparecer abajo.';
+  }
+
+  // Por obra
+  if (q.indexOf('obra') >= 0 && (q.indexOf('por') >= 0 || q.indexOf('cada') >= 0)) {
+    mostrarPorObra();
+    return 'Mostrando operarios agrupados por obra...';
+  }
+
+  // Resumen general
+  if (q.indexOf('resum') >= 0) {
+    var horas = WORKERS.reduce(function(a,w) { return a + parseFloat(w.h||0); }, 0).toFixed(1);
+    return '<strong>Resumen del dia:</strong><br><br>' +
+      '&#128119; Total plantilla: <strong>' + WORKERS.length + '</strong><br>' +
+      '&#9989; En obra: <strong>' + enObra.length + '</strong><br>' +
+      '&#10060; Sin fichar: <strong>' + sinFichar.length + '</strong><br>' +
+      '&#8987; Con retraso: <strong>' + tarde.length + '</strong><br>' +
+      '&#8987; Horas acumuladas: <strong>' + horas + 'h</strong>';
+  }
+
+  return 'No entiendo la pregunta. Usa los botones rapidos o pregunta por:<br>' +
+    '"albaniles en obra", "cuantos pintores", "quien no ficho", "resumen del dia"';
+}
+
+// VER INCIDENCIAS
+function cargarIncidencias() {
+  var panel = document.getElementById('panel-reportes');
+  var list = document.getElementById('reportes-list');
+  if (!panel || !list) return;
+  panel.style.display = 'block';
+  list.innerHTML = '<div style="padding:16px;text-align:center;color:var(--text3);">Cargando...</div>';
+  fetch(FB + '/incidencias.json')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (!data) { list.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text3);">Sin incidencias registradas.</div>'; return; }
+      var hoy = new Date().toISOString().split('T')[0];
+      var items = Object.values(data)
+        .filter(function(i) { return i.fecha === hoy; })
+        .sort(function(a,b) { return (b.timestamp||0) - (a.timestamp||0); });
+      if (!items.length) { list.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text3);">Sin incidencias hoy.</div>'; return; }
+      list.innerHTML = items.map(function(inc) {
+        var color = inc.resuelta ? 'var(--verde3)' : 'var(--amber)';
+        return '<div style="padding:12px 14px;border-bottom:1px solid var(--border);display:flex;gap:12px;align-items:flex-start;">' +
+          '<div style="width:3px;background:' + color + ';border-radius:2px;flex-shrink:0;align-self:stretch;"></div>' +
+          '<div style="flex:1;">' +
+            '<div style="display:flex;justify-content:space-between;margin-bottom:4px;">' +
+              '<span style="font-size:11px;font-weight:700;color:var(--amber);background:var(--amber-l);padding:2px 8px;border-radius:4px;">' + (inc.tipo||'Incidencia') + '</span>' +
+              '<span style="font-size:10px;color:var(--text3);">' + (inc.hora||'') + '</span>' +
+            '</div>' +
+            '<div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px;">&#128119; ' + (inc.operario||'Operario') + '</div>' +
+            '<div style="font-size:11px;color:var(--text2);">' + (inc.desc||'Sin descripcion') + '</div>' +
+            '<div style="margin-top:6px;display:flex;gap:6px;">' +
+              '<button onclick="responderOperario(\'' + (inc.operario||'') + '\')" style="padding:4px 10px;background:var(--verde-light);border:1px solid var(--border2);border-radius:6px;font-size:10px;color:var(--verde3);cursor:pointer;">&#128172; Responder</button>' +
+              (!inc.resuelta ? '<button onclick="resolverInc(this)" style="padding:4px 10px;background:var(--blue-l);border:1px solid rgba(27,79,140,.2);border-radius:6px;font-size:10px;color:var(--blue);cursor:pointer;">&#10003; Resolver</button>' : '<span style="font-size:10px;color:var(--verde3);">&#10003; Resuelta</span>') +
+            '</div>' +
+          '</div>' +
+          '</div>';
+      }).join('');
+    }).catch(function() { list.innerHTML = '<div style="padding:24px;text-align:center;color:var(--red);">Error al cargar incidencias.</div>'; });
+}
+
+function responderOperario(nombre) {
+  var msg = encodeURIComponent('Hola ' + nombre + ', hemos recibido tu reporte. ');
+  window.open('https://wa.me/34609321585?text=' + msg, '_blank');
+}
+
+function resolverInc(btn) {
+  btn.textContent = 'Resuelta';
+  btn.style.color = 'var(--verde3)';
+  btn.style.borderColor = 'var(--border2)';
+  btn.style.background = 'var(--verde-light)';
+  showToast('Incidencia marcada como resuelta', 'ok');
+}
+
+function verReportesOperarios() {
+  cargarIncidencias();
+}
+
+// VER POR OBRA
+function mostrarPorObra() {
+  var panel = document.getElementById('panel-obra');
+  var list = document.getElementById('obra-list');
+  if (!panel || !list) return;
+  panel.style.display = 'block';
+  var obras = {};
+  WORKERS.forEach(function(w) {
+    var obra = (w.obra||'Sin obra asignada').split(',')[0].trim();
+    if (!obras[obra]) obras[obra] = [];
+    obras[obra].push(w);
+  });
+  if (!Object.keys(obras).length) {
+    list.innerHTML = '<div style="text-align:center;color:var(--text3);">No hay operarios registrados.</div>';
+    return;
+  }
+  list.innerHTML = Object.keys(obras).map(function(obra) {
+    var ops = obras[obra];
+    var enObra = ops.filter(function(w) { return w.status === 'in'; }).length;
+    var catResumen = {};
+    ops.forEach(function(w) { var c = w.cat||'peon'; catResumen[c] = (catResumen[c]||0)+1; });
+    var catStr = Object.keys(catResumen).map(function(c) {
+      var labels = {peon:'Peon', oficial:'Oficial', encargado:'Encargado'};
+      return catResumen[c] + ' ' + (labels[c]||c);
+    }).join(', ');
+    return '<div style="margin-bottom:14px;">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;background:var(--verde-light);border-radius:8px;padding:10px 14px;margin-bottom:6px;">' +
+        '<div>' +
+          '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:14px;letter-spacing:1px;color:var(--verde);">&#127968; ' + obra + '</div>' +
+          '<div style="font-size:10px;color:var(--text3);">' + catStr + '</div>' +
+        '</div>' +
+        '<div style="text-align:right;">' +
+          '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:22px;color:var(--verde3);">' + ops.length + '</div>' +
+          '<div style="font-size:9px;color:var(--verde3);">' + enObra + ' en obra</div>' +
+        '</div>' +
+      '</div>' +
+      ops.map(function(w) {
+        var st = w.status === 'in' ? '&#9989;' : w.status === 'out' ? '&#128308;' : '&#9200;';
+        var catL = {peon:'Peon', oficial:'Oficial', encargado:'Encargado'};
+        return '<div style="display:flex;justify-content:space-between;padding:6px 14px;border-bottom:1px solid var(--border);font-size:12px;">' +
+          '<span>' + st + ' ' + w.nombre + ' ' + w.apellidos + '</span>' +
+          '<span style="color:var(--text3);font-size:10px;">' + (catL[w.cat||'peon']||'Peon') + '</span>' +
+          '</div>';
+      }).join('') +
+      '</div>';
+  }).join('');
 }
 
 // TOAST
