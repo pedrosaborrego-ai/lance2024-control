@@ -489,7 +489,7 @@ const FB_URL = 'https://obracontroldemo-default-rtdb.europe-west1.firebasedataba
 const DEMO_CLAVE = 'BA49159567EFC254';
 const PIN_OFICINA = '0000';
 
-// ── LICENCIA ──
+// -- LICENCIA --
 function checkLicencia(){
   const saved = localStorage.getItem('ocp_lic_oficina');
   if(saved === DEMO_CLAVE){ showLogin(); return; }
@@ -507,7 +507,7 @@ function activarLicencia(){
   msg.textContent='❌ Clave no válida';
 }
 
-// ── PIN ──
+// -- PIN --
 const PIN=PIN_OFICINA; let pinVal='';
 function pk(d){ if(pinVal.length>=4)return; pinVal+=d; updDots(); if(pinVal.length===4) setTimeout(checkPin,200); }
 function pkDel(){ pinVal=pinVal.slice(0,-1); updDots(); document.getElementById('pin-err').textContent=''; }
@@ -526,7 +526,7 @@ function checkPin(){
 }
 function logout(){ pinVal=''; updDots(); document.getElementById('app').style.display='none'; document.getElementById('login-screen').style.display='flex'; }
 
-// ── CLOCK ──
+// -- CLOCK --
 function tick(){
   const n=new Date();
   document.getElementById('clock').textContent=n.toLocaleTimeString('es-ES');
@@ -534,7 +534,7 @@ function tick(){
 }
 setInterval(tick,1000); tick();
 
-// ── DATA ──
+// -- DATA --
 let WORKERS=[];
 // Limpiar operarios de Lance si los hay mezclados
 try{
@@ -588,7 +588,7 @@ function loadFromFirebase(){
   }).catch(()=>{});
 }
 
-// ── KPI ──
+// -- KPI --
 function animKPI(id,target,dur=1200){
   const el=document.getElementById(id); if(!el)return;
   const start=performance.now();
@@ -596,7 +596,7 @@ function animKPI(id,target,dur=1200){
     el.textContent=Math.round(e*target); if(p<1) requestAnimationFrame(s); })(performance.now());
 }
 
-// ── PAGES ──
+// -- PAGES --
 const TITLES={tablero:'TABLERO',operarios:'OPERARIOS',jornada:'JORNADA',alertas:'ALERTAS',tareas:'TAREAS',alta:'ALTA OPERARIOS',asistente:'ASISTENTE IA'};
 function showPage(name){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -610,7 +610,7 @@ function showPage(name){
   if(name==='tareas') loadTareas();
 }
 
-// ── WORKERS ──
+// -- WORKERS --
 function renderWorkers(){
   const tb=document.getElementById('op-tbody'); if(!tb)return;
   const q=(document.getElementById('op-search')?.value||'').toLowerCase();
@@ -642,7 +642,7 @@ function renderJornada(){
   }).join('');
 }
 
-// ── ALTA ──
+// -- ALTA --
 let lastAdded=null;
 function saveWorker(){
   const id=document.getElementById('edit-id').value;
@@ -705,7 +705,23 @@ function selectCategoria(cat){
 const APP_URL='https://bufeteimpagosojuridicos-byte.github.io/pedrosaborrego-ai/ocp-operario.html';
 
 function genMsgWA(w){
-  return `🏗️ *OBRACONTROL PRO*\n\nHola ${w.nombre} ${w.apellidos} 👋\n\nTu acceso a la app:\n\n📱 ${APP_URL}\n\n📄 DNI/NIE: *${w.dni||w.nie}*\n🔐 PIN: *${w.pin}*\n\n📍 Obra: ${w.obra||'Consulta encargado'}\n\n_ObraControl Pro_`;
+  var n = w.nombre + ' ' + w.apellidos;
+  var doc = w.dni || w.nie || '';
+  var obra = w.obra || 'Consulta con el encargado';
+  return '🏗️ *OBRACONTROL PRO*
+
+Hola ' + n + ' 👋
+
+Tu acceso a la app:
+
+📱 ' + APP_URL + '
+
+📄 DNI/NIE: *' + doc + '*
+🔐 PIN: *' + w.pin + '*
+
+📍 Obra: ' + obra + '
+
+_ObraControl Pro_';
 }
 
 function sendWaAlta(){
@@ -769,7 +785,7 @@ function renderGestion(){
     </div>`).join('');
 }
 
-// ── TAREAS ──
+// -- TAREAS --
 function loadTareas(){
   fetch(`${FB_URL}/tareas.json`).then(r=>r.json()).then(data=>{
     const log=document.getElementById('task-log'); if(!log)return;
@@ -805,7 +821,7 @@ function sendTask(){
     .catch(()=>showToast('⚠️ Error','err'));
 }
 
-// ── CHAT IA ──
+// -- CHAT IA --
 function quickChat(msg){ document.getElementById('chat-input').value=msg; sendChat(); }
 function sendChat(){
   const input=document.getElementById('chat-input');
@@ -835,7 +851,7 @@ function responder(msg){
   return 'Prueba: "¿Quién no fichó?", "¿Cuántos en obra?", "Resumen"';
 }
 
-// ── TOAST ──
+// -- TOAST --
 let toastTimer;
 function showToast(msg,tipo){
   const t=document.getElementById('toast');
