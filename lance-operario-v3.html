@@ -148,6 +148,65 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);}
   <div class="splash-bar"><div class="splash-bar-fill"></div></div>
 </div>
 
+<!-- ══ PANTALLA BIENVENIDA (solo primera vez, como app store) ══ -->
+<div id="s-welcome" style="position:fixed;inset:0;z-index:998;background:linear-gradient(160deg,#0A1628 0%,#1B3A6B 55%,#0A1628 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 28px;text-align:center;">
+  <div style="animation:splashIn 1s ease .1s both;">
+    <svg width="120" height="120" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+      <rect width="400" height="400" rx="80" fill="#1B4F8C"/>
+      <rect x="148" y="80" width="104" height="140" fill="white"/>
+      <rect x="245" y="115" width="70" height="105" fill="none" stroke="white" stroke-width="10" opacity=".6"/>
+      <rect x="85" y="135" width="63" height="85" fill="none" stroke="white" stroke-width="10" opacity=".6"/>
+      <line x1="60" y1="220" x2="340" y2="220" stroke="white" stroke-width="9"/>
+      <circle cx="270" cy="290" r="55" fill="#FF6B35"/>
+      <circle cx="270" cy="284" r="20" fill="white"/>
+      <path d="M270 309 L270 335" stroke="#FF6B35" stroke-width="7"/>
+    </svg>
+  </div>
+  <div style="margin-top:24px;animation:splashIn 1s ease .3s both;">
+    <div style="font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:6px;">construcciones</div>
+    <div style="font-family:'Montserrat',sans-serif;font-size:38px;font-weight:900;color:white;letter-spacing:3px;line-height:1;">LANCE</div>
+    <div style="font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;color:rgba(255,255,255,.7);margin-top:6px;letter-spacing:1px;">ObraControl GPS</div>
+  </div>
+  <div style="margin-top:12px;animation:splashIn 1s ease .5s both;">
+    <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);padding:6px 16px;border-radius:20px;font-size:11px;color:rgba(255,255,255,.6);font-family:'Montserrat',sans-serif;letter-spacing:1px;">
+      📍 Control de presencia en obra
+    </div>
+  </div>
+  <div style="margin-top:48px;width:100%;max-width:320px;animation:splashIn 1s ease .7s both;">
+    <button onclick="startApp()" style="width:100%;padding:17px;background:linear-gradient(135deg,#FF6B35,#E8621A);border:none;border-radius:14px;font-family:'Montserrat',sans-serif;font-size:15px;font-weight:800;letter-spacing:1.5px;color:white;cursor:pointer;box-shadow:0 8px 28px rgba(255,107,53,.4);">
+      COMENZAR →
+    </button>
+    <div style="margin-top:12px;font-size:10px;color:rgba(255,255,255,.35);font-family:'Inter',sans-serif;">
+      Construcciones Lance 2024 SL
+    </div>
+  </div>
+</div>
+
+<!-- ══ PANTALLA RGPD (en idioma del operario) ══ -->
+<div id="s-rgpd" style="position:fixed;inset:0;z-index:997;background:var(--bg);display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px 22px;overflow-y:auto;">
+  <div style="width:100%;max-width:340px;">
+    <div style="text-align:center;margin-bottom:20px;">
+      <div style="font-size:44px;margin-bottom:8px;">🔒</div>
+      <div id="rgpd-title" style="font-family:'Montserrat',sans-serif;font-size:18px;font-weight:800;color:var(--text);margin-bottom:6px;">Protección de datos</div>
+      <div id="rgpd-subtitle" style="font-size:12px;color:var(--muted);line-height:1.5;">Antes de continuar necesitamos tu consentimiento</div>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:16px;max-height:280px;overflow-y:auto;">
+      <div id="rgpd-text" style="font-size:11px;color:var(--muted);line-height:1.7;"></div>
+    </div>
+    <div style="background:rgba(37,99,174,.08);border:1px solid rgba(37,99,174,.2);border-radius:10px;padding:12px 14px;margin-bottom:16px;display:flex;align-items:flex-start;gap:10px;">
+      <div style="font-size:18px;flex-shrink:0;">📍</div>
+      <div id="rgpd-gps-txt" style="font-size:11px;color:var(--blue3);line-height:1.6;"></div>
+    </div>
+    <button onclick="acceptRGPD()" id="rgpd-btn" style="width:100%;padding:15px;background:var(--blue2);border:none;border-radius:12px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:800;letter-spacing:1px;color:white;cursor:pointer;margin-bottom:8px;">
+      ✅ Acepto y continuar
+    </button>
+    <button onclick="rejectRGPD()" id="rgpd-reject" style="width:100%;padding:12px;background:transparent;border:1px solid var(--border);border-radius:12px;font-size:12px;color:var(--muted);cursor:pointer;">
+      ✕ No acepto
+    </button>
+    <div id="rgpd-reject-msg" style="display:none;margin-top:10px;background:rgba(255,71,87,.1);border:1px solid rgba(255,71,87,.3);border-radius:8px;padding:10px;font-size:11px;color:var(--red);text-align:center;line-height:1.5;"></div>
+  </div>
+</div>
+
 <!-- IDIOMA -->
 <div class="screen" id="s-lang">
   <div class="logo-wrap">
@@ -175,7 +234,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);}
     <div class="lang-btn" onclick="selLang('fr',this)"><div class="lf">🇫🇷</div><div><div class="ln">Français</div><div class="lnat">Français</div></div></div>
     <div class="lang-btn" onclick="selLang('en',this)"><div class="lf">🇬🇧</div><div><div class="ln">English</div><div class="lnat">English</div></div></div>
   </div>
-  <button class="btn-main" onclick="goTo('s-name')">Continuar →</button>
+  <button class="btn-main" onclick="continuarDesdeIdioma()">Continuar →</button>
 </div>
 
 <!-- DNI/NIE -->
@@ -330,6 +389,228 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);}
 // ── FIREBASE ──
 const FB_URL = 'https://lance-a99b4-default-rtdb.europe-west1.firebasedatabase.app';
 
+// ══════════════════════════════════════
+// TEXTOS RGPD EN 6 IDIOMAS
+// ══════════════════════════════════════
+const RGPD_TX = {
+  es: {
+    title: 'Protección de datos',
+    subtitle: 'Antes de continuar necesitamos tu consentimiento',
+    gps: 'Esta app necesita acceso a tu ubicación GPS para registrar que estás en la zona de obra al fichar. La ubicación solo se registra cuando pulsas el botón de fichar.',
+    btn: '✅ Acepto y continuar',
+    reject: 'No acepto',
+    reject_msg: 'Sin aceptar la protección de datos no puedes usar la app. Habla con el encargado.',
+    text: `INFORMACIÓN SOBRE PROTECCIÓN DE DATOS (RGPD)\n\n` +
+      `Responsable: Construcciones Lance 2024 SL\n` +
+      `Contacto: pedrosaborrego@gmail.com\n\n` +
+      `DATOS QUE RECOGEMOS:\n` +
+      `• Tu nombre y DNI/NIE (identificación)\n` +
+      `• Hora de entrada y salida (control de presencia)\n` +
+      `• Ubicación GPS al fichar (latitud, longitud, ciudad)\n\n` +
+      `PARA QUÉ LOS USAMOS:\n` +
+      `• Control de asistencia y presencia en obra\n` +
+      `• Cálculo de horas trabajadas\n` +
+      `• Cumplimiento de normativa laboral\n\n` +
+      `TUS DERECHOS:\n` +
+      `Puedes solicitar acceso, rectificación o supresión de tus datos contactando con el encargado o en pedrosaborrego@gmail.com\n\n` +
+      `Los datos se almacenan en servidores europeos (Firebase, Bélgica) y no se ceden a terceros.`
+  },
+  ca: {
+    title: 'Protecció de dades',
+    subtitle: 'Abans de continuar necessitem el teu consentiment',
+    gps: 'Aquesta app necessita accés a la teva ubicació GPS per registrar que ets a la zona d\'obra quan fitxes. La ubicació només es registra quan prems el botó de fitxar.',
+    btn: '✅ Accepto i continuar',
+    reject: 'No accepto',
+    reject_msg: 'Sense acceptar la protecció de dades no pots usar l\'app. Parla amb l\'encarregat.',
+    text: `INFORMACIÓ SOBRE PROTECCIÓ DE DADES (RGPD)\n\n` +
+      `Responsable: Construccions Lance 2024 SL\n` +
+      `Contacte: pedrosaborrego@gmail.com\n\n` +
+      `DADES QUE RECOLLIM:\n` +
+      `• El teu nom i DNI/NIE (identificació)\n` +
+      `• Hora d'entrada i sortida (control de presència)\n` +
+      `• Ubicació GPS en fitxar (latitud, longitud, ciutat)\n\n` +
+      `PER A QUÈ ELS FEM SERVIR:\n` +
+      `• Control d'assistència i presència a l'obra\n` +
+      `• Càlcul d'hores treballades\n` +
+      `• Compliment de la normativa laboral\n\n` +
+      `ELS TEUS DRETS:\n` +
+      `Pots sol·licitar accés, rectificació o supressió de les teves dades contactant amb l'encarregat o a pedrosaborrego@gmail.com\n\n` +
+      `Les dades s'emmagatzemen a servidors europeus (Firebase, Bèlgica) i no es cedeixen a tercers.`
+  },
+  ro: {
+    title: 'Protecția datelor',
+    subtitle: 'Înainte de a continua avem nevoie de consimțământul tău',
+    gps: 'Această aplicație are nevoie de acces la locația ta GPS pentru a înregistra că ești în zona șantierului când pontezi. Locația se înregistrează doar când apeși butonul de pontaj.',
+    btn: '✅ Accept și continuă',
+    reject: 'Nu accept',
+    reject_msg: 'Fără a accepta protecția datelor nu poți folosi aplicația. Vorbește cu responsabilul.',
+    text: `INFORMAȚII PRIVIND PROTECȚIA DATELOR (GDPR)\n\n` +
+      `Responsabil: Construcciones Lance 2024 SL\n` +
+      `Contact: pedrosaborrego@gmail.com\n\n` +
+      `DATE PE CARE LE COLECTĂM:\n` +
+      `• Numele și CNP/ID (identificare)\n` +
+      `• Ora de intrare și ieșire (control prezență)\n` +
+      `• Locație GPS la pontaj (latitudine, longitudine, oraș)\n\n` +
+      `SCOPUL COLECTĂRII:\n` +
+      `• Control prezență pe șantier\n` +
+      `• Calculul orelor lucrate\n` +
+      `• Conformitate cu legislația muncii\n\n` +
+      `DREPTURILE TALE:\n` +
+      `Poți solicita acces, rectificare sau ștergerea datelor tale contactând responsabilul sau la pedrosaborrego@gmail.com\n\n` +
+      `Datele sunt stocate pe servere europene (Firebase, Belgia) și nu sunt transmise terților.`
+  },
+  ar: {
+    title: 'حماية البيانات',
+    subtitle: 'قبل المتابعة نحتاج إلى موافقتك',
+    gps: 'يحتاج هذا التطبيق إلى الوصول إلى موقعك GPS لتسجيل تواجدك في موقع العمل عند تسجيل الحضور. يتم تسجيل الموقع فقط عند الضغط على زر التسجيل.',
+    btn: '✅ أوافق وأكمل',
+    reject: 'لا أوافق',
+    reject_msg: 'لا يمكنك استخدام التطبيق بدون قبول حماية البيانات. تحدث مع المسؤول.',
+    text: `معلومات حماية البيانات\n\n` +
+      `المسؤول: Construcciones Lance 2024 SL\n` +
+      `البريد: pedrosaborrego@gmail.com\n\n` +
+      `البيانات التي نجمعها:\n` +
+      `• اسمك ورقم هويتك\n` +
+      `• وقت الدخول والخروج\n` +
+      `• موقع GPS عند التسجيل\n\n` +
+      `الغرض من الجمع:\n` +
+      `• مراقبة الحضور في موقع العمل\n` +
+      `• حساب ساعات العمل\n` +
+      `• الامتثال لقانون العمل\n\n` +
+      `حقوقك:\n` +
+      `يمكنك طلب الوصول أو تصحيح أو حذف بياناتك عبر pedrosaborrego@gmail.com\n\n` +
+      `يتم تخزين البيانات على خوادم أوروبية ولا تُشارك مع أطراف ثالثة.`
+  },
+  fr: {
+    title: 'Protection des données',
+    subtitle: 'Avant de continuer nous avons besoin de ton consentement',
+    gps: 'Cette app a besoin d\'accéder à ta localisation GPS pour enregistrer que tu es sur le chantier quand tu pointes. La localisation n\'est enregistrée que lorsque tu appuies sur le bouton de pointage.',
+    btn: '✅ J\'accepte et continuer',
+    reject: 'Je n\'accepte pas',
+    reject_msg: 'Sans accepter la protection des données tu ne peux pas utiliser l\'app. Parle au responsable.',
+    text: `INFORMATIONS SUR LA PROTECTION DES DONNÉES (RGPD)\n\n` +
+      `Responsable: Construcciones Lance 2024 SL\n` +
+      `Contact: pedrosaborrego@gmail.com\n\n` +
+      `DONNÉES QUE NOUS COLLECTONS:\n` +
+      `• Ton nom et DNI/NIE (identification)\n` +
+      `• Heure d'entrée et de sortie (contrôle présence)\n` +
+      `• Localisation GPS au pointage\n\n` +
+      `POURQUOI NOUS LES UTILISONS:\n` +
+      `• Contrôle présence sur chantier\n` +
+      `• Calcul des heures travaillées\n` +
+      `• Conformité à la législation du travail\n\n` +
+      `TES DROITS:\n` +
+      `Tu peux demander l'accès, la rectification ou la suppression de tes données à pedrosaborrego@gmail.com\n\n` +
+      `Les données sont stockées sur des serveurs européens (Firebase, Belgique) et ne sont pas partagées.`
+  },
+  en: {
+    title: 'Data Protection',
+    subtitle: 'Before continuing we need your consent',
+    gps: 'This app needs access to your GPS location to record that you are at the work site when clocking in. Location is only recorded when you press the clock-in button.',
+    btn: '✅ I accept and continue',
+    reject: 'I do not accept',
+    reject_msg: 'You cannot use the app without accepting data protection. Talk to the supervisor.',
+    text: `DATA PROTECTION INFORMATION (GDPR)\n\n` +
+      `Controller: Construcciones Lance 2024 SL\n` +
+      `Contact: pedrosaborrego@gmail.com\n\n` +
+      `DATA WE COLLECT:\n` +
+      `• Your name and ID number (identification)\n` +
+      `• Clock-in and clock-out time (attendance control)\n` +
+      `• GPS location when clocking (latitude, longitude, city)\n\n` +
+      `WHY WE USE THEM:\n` +
+      `• Attendance control on site\n` +
+      `• Calculation of hours worked\n` +
+      `• Compliance with labour regulations\n\n` +
+      `YOUR RIGHTS:\n` +
+      `You can request access, rectification or deletion of your data at pedrosaborrego@gmail.com\n\n` +
+      `Data is stored on European servers (Firebase, Belgium) and is not shared with third parties.`
+  }
+};
+
+// ══════════════════════════════════════
+// FLUJO DE BIENVENIDA
+// ══════════════════════════════════════
+
+// Mostrar pantalla de bienvenida solo la primera vez
+function initWelcome(){
+  const welcomed = localStorage.getItem('lance_welcomed');
+  if(welcomed){
+    // Ya pasó por bienvenida — ir directo al idioma
+    document.getElementById('s-welcome').style.display='none';
+    checkRGPD();
+  } else {
+    document.getElementById('s-welcome').style.display='flex';
+  }
+}
+
+function startApp(){
+  localStorage.setItem('lance_welcomed','1');
+  document.getElementById('s-welcome').style.display='none';
+  checkRGPD();
+}
+
+// Comprobar si ya aceptó RGPD
+function checkRGPD(){
+  const accepted = localStorage.getItem('lance_rgpd_accepted');
+  if(accepted === '1'){
+    showScreen('s-lang');
+  } else {
+    showRGPD();
+  }
+}
+
+function showRGPD(){
+  // Mostrar RGPD en el idioma ya seleccionado (o español por defecto)
+  const r = RGPD_TX[lang] || RGPD_TX.es;
+  document.getElementById('rgpd-title').textContent    = r.title;
+  document.getElementById('rgpd-subtitle').textContent = r.subtitle;
+  document.getElementById('rgpd-gps-txt').textContent  = r.gps;
+  document.getElementById('rgpd-btn').textContent      = r.btn;
+  document.getElementById('rgpd-reject').textContent   = r.reject;
+  // Texto con saltos de línea
+  document.getElementById('rgpd-text').innerHTML =
+    r.text.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
+  // Dirección RTL para árabe
+  document.getElementById('s-rgpd').style.direction = lang==='ar'?'rtl':'ltr';
+  document.getElementById('s-rgpd').style.display = 'flex';
+}
+
+function acceptRGPD(){
+  localStorage.setItem('lance_rgpd_accepted','1');
+  document.getElementById('s-rgpd').style.display = 'none';
+  // Pedir permiso GPS ahora (en el idioma correcto)
+  requestGPSPermission();
+}
+
+function rejectRGPD(){
+  const r = RGPD_TX[lang] || RGPD_TX.es;
+  const msg = document.getElementById('rgpd-reject-msg');
+  msg.textContent = r.reject_msg;
+  msg.style.display = 'block';
+}
+
+// Pedir permiso GPS explícito
+function requestGPSPermission(){
+  if(!navigator.geolocation){
+    showScreen('s-lang');
+    return;
+  }
+  // Pedir posición para disparar el diálogo del navegador
+  navigator.geolocation.getCurrentPosition(
+    ()=>{ showScreen('s-lang'); },
+    ()=>{ showScreen('s-lang'); },
+    {enableHighAccuracy:true, timeout:8000, maximumAge:0}
+  );
+  // Ir al idioma igualmente después de 2s
+  setTimeout(()=>{ showScreen('s-lang'); }, 2000);
+}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.add('hidden'));
+  const el = document.getElementById(id);
+  if(el) el.classList.remove('hidden');
+}
+
 // ── STATE ──
 let lang = 'es';
 let workerName = '';   // Solo para mostrar en pantalla
@@ -367,6 +648,12 @@ function selLang(l,el){
   el.classList.add('sel');
   document.body.style.direction=l==='ar'?'rtl':'ltr';
   document.getElementById('lt').textContent=t('lang_select');
+}
+
+// Al pulsar Continuar en idioma — RGPD en ese idioma si no aceptado
+function continuarDesdeIdioma(){
+  const accepted = localStorage.getItem('lance_rgpd_accepted');
+  if(accepted === '1'){ goTo('s-name'); } else { showRGPD(); }
 }
 function switchLang(l){
   lang=l;
@@ -709,7 +996,7 @@ function logout(){
 window.addEventListener('load',()=>{
   setTimeout(()=>{
     const splash=document.getElementById('s-splash');
-    if(splash){ splash.classList.add('fade-out'); setTimeout(()=>splash.style.display='none',650); }
+    if(splash){ splash.classList.add('fade-out'); setTimeout(()=>{ splash.style.display='none'; initWelcome(); },650); }
   },2800);
 });
 
