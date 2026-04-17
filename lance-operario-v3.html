@@ -4,385 +4,135 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>ObraControl – Construcciones Lance 2024 SL</title>
-<!-- PWA meta tags -->
 <meta name="application-name" content="ObraControl GPS">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Lance GPS">
 <meta name="theme-color" content="#1B4F8C">
 <meta name="mobile-web-app-capable" content="yes">
-<!-- Manifest para Android PWA -->
 <link rel="manifest" href="/lance2024/manifest.json">
-<!-- Icono para pantalla de inicio -->
 <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' fill='%231B4F8C' rx='32'/><rect x='70' y='28' width='52' height='72' fill='white'/><rect x='116' y='44' width='34' height='56' fill='none' stroke='white' stroke-width='5' opacity='.6'/><rect x='42' y='54' width='30' height='46' fill='none' stroke='white' stroke-width='5' opacity='.6'/><line x1='28' y1='100' x2='164' y2='100' stroke='white' stroke-width='6'/><circle cx='130' cy='136' r='20' fill='%23FF6B35'/><circle cx='130' cy='133' r='8' fill='white'/><path d='M130 153 L130 170' stroke='%23FF6B35' stroke-width='4'/></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --blue:    #1B4F8C;
-  --blue2:   #2563AE;
-  --blue3:   #CCE0F5;
-  --orange:  #FF6B35;
-  --bg:      #0A1628;
-  --card:    #101E30;
-  --card2:   #162438;
-  --border:  #1E3050;
-  --text:    #EDF2F7;
-  --muted:   #718096;
-  --green:   #38E07B;
-  --red:     #FF4757;
-  --amber:   #FFA502;
+  --blue:#1B4F8C;--blue2:#2563AE;--blue3:#CCE0F5;--orange:#FF6B35;
+  --bg:#0A1628;--card:#101E30;--card2:#162438;--border:#1E3050;
+  --text:#EDF2F7;--muted:#718096;--green:#38E07B;--red:#FF4757;--amber:#FFA502;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;overflow:hidden;}
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);}
-
-/* SCREENS */
-.screen{
-  position:fixed;inset:0;
-  display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
-  padding:24px 22px;
-  transition:opacity .3s,transform .3s;
-  overflow-y:auto;
-}
+.screen{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 22px;transition:opacity .3s,transform .3s;overflow-y:auto;}
 .screen.hidden{opacity:0;pointer-events:none;transform:scale(.97);}
-
-/* ── LOGO REAL ── */
 .logo-wrap{text-align:center;margin-bottom:28px;}
 .logo-img{width:180px;height:auto;display:block;margin:0 auto 10px;}
-.logo-sub{
-  font-family:'Montserrat',sans-serif;
-  font-size:9px;font-weight:700;letter-spacing:3px;
-  text-transform:uppercase;color:var(--muted);margin-top:4px;
-}
-.logo-pill{
-  display:inline-flex;align-items:center;gap:6px;
-  background:rgba(27,79,140,.2);border:1px solid rgba(27,79,140,.4);
-  padding:4px 12px;border-radius:20px;margin-top:8px;
-  font-size:10px;font-weight:600;color:var(--blue3);
-  font-family:'Montserrat',sans-serif;letter-spacing:1px;
-}
-
-/* STEP INDICATOR */
-.steps-indicator{
-  display:flex;align-items:center;gap:6px;margin-bottom:24px;
-}
-.si-dot{
-  width:28px;height:4px;border-radius:2px;
-  background:var(--border);transition:background .3s;
-}
+.logo-sub{font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-top:4px;}
+.logo-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(27,79,140,.2);border:1px solid rgba(27,79,140,.4);padding:4px 12px;border-radius:20px;margin-top:8px;font-size:10px;font-weight:600;color:var(--blue3);font-family:'Montserrat',sans-serif;letter-spacing:1px;}
+.steps-indicator{display:flex;align-items:center;gap:6px;margin-bottom:24px;}
+.si-dot{width:28px;height:4px;border-radius:2px;background:var(--border);transition:background .3s;}
 .si-dot.active{background:var(--blue2);}
 .si-dot.done{background:var(--green);}
-
-/* LANG GRID */
-.lang-title{
-  font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;
-  letter-spacing:2px;text-transform:uppercase;color:var(--muted);
-  margin-bottom:14px;text-align:center;
-}
+.lang-title{font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:14px;text-align:center;}
 .lang-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;max-width:310px;}
-.lang-btn{
-  background:var(--card);border:1.5px solid var(--border);
-  border-radius:12px;padding:14px 10px;
-  display:flex;align-items:center;gap:10px;
-  cursor:pointer;transition:all .18s;
-}
+.lang-btn{background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:14px 10px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:all .18s;}
 .lang-btn:active{transform:scale(.95);}
 .lang-btn.sel{border-color:var(--blue2);background:rgba(37,99,174,.15);}
 .lf{font-size:22px;flex-shrink:0;}
 .ln{font-size:12px;font-weight:700;color:var(--text);}
 .lnat{font-size:9px;color:var(--muted);margin-top:1px;}
-
-/* BUTTONS */
-.btn-main{
-  width:100%;max-width:310px;padding:15px;
-  background:var(--blue2);border:none;border-radius:12px;
-  font-family:'Montserrat',sans-serif;font-size:14px;font-weight:800;
-  letter-spacing:1px;color:#fff;cursor:pointer;
-  transition:all .18s;box-shadow:0 6px 20px rgba(37,99,174,.4);
-  margin-top:16px;
-}
+.btn-main{width:100%;max-width:310px;padding:15px;background:var(--blue2);border:none;border-radius:12px;font-family:'Montserrat',sans-serif;font-size:14px;font-weight:800;letter-spacing:1px;color:#fff;cursor:pointer;transition:all .18s;box-shadow:0 6px 20px rgba(37,99,174,.4);margin-top:16px;}
 .btn-main:active{transform:scale(.97);opacity:.9;}
 .btn-main:disabled{opacity:.35;cursor:not-allowed;box-shadow:none;}
-.btn-sec{
-  width:100%;max-width:310px;padding:13px;
-  background:transparent;border:1.5px solid var(--border);
-  border-radius:12px;font-family:'Inter',sans-serif;
-  font-size:13px;color:var(--muted);cursor:pointer;
-  transition:all .18s;margin-top:8px;
-}
+.btn-sec{width:100%;max-width:310px;padding:13px;background:transparent;border:1.5px solid var(--border);border-radius:12px;font-family:'Inter',sans-serif;font-size:13px;color:var(--muted);cursor:pointer;transition:all .18s;margin-top:8px;}
 .btn-sec:active{border-color:var(--blue2);color:var(--blue3);}
-
-/* FORM */
-.form-lbl{
-  display:block;font-family:'Montserrat',sans-serif;
-  font-size:9px;font-weight:700;letter-spacing:2px;
-  text-transform:uppercase;color:var(--muted);margin-bottom:6px;
-}
-.form-inp{
-  width:100%;max-width:310px;
-  background:var(--card2);border:1.5px solid var(--border);
-  color:var(--text);padding:13px 14px;border-radius:10px;
-  font-family:'Inter',sans-serif;font-size:15px;outline:none;
-  transition:border-color .2s;
-}
+.form-lbl{display:block;font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+.form-inp{width:100%;max-width:310px;background:var(--card2);border:1.5px solid var(--border);color:var(--text);padding:13px 14px;border-radius:10px;font-family:'Inter',sans-serif;font-size:15px;outline:none;transition:border-color .2s;}
 .form-inp:focus{border-color:var(--blue2);}
 .form-group{width:100%;max-width:310px;margin-bottom:14px;text-align:left;}
-
-/* PIN DOTS */
 .pin-dots{display:flex;gap:14px;justify-content:center;margin:18px 0;}
-.pdot{
-  width:16px;height:16px;border-radius:50%;
-  border:2px solid var(--border);background:transparent;
-  transition:all .15s;
-}
+.pdot{width:16px;height:16px;border-radius:50%;border:2px solid var(--border);background:transparent;transition:all .15s;}
 .pdot.on{background:var(--blue2);border-color:var(--blue2);transform:scale(1.1);}
-
-/* PIN PAD */
-.pin-pad{
-  display:grid;grid-template-columns:repeat(3,1fr);
-  gap:10px;width:100%;max-width:280px;
-}
-.pk{
-  height:64px;border-radius:12px;
-  background:var(--card);border:1.5px solid var(--border);
-  font-family:'Montserrat',sans-serif;font-size:24px;font-weight:700;
-  color:var(--text);cursor:pointer;transition:all .12s;
-  display:flex;align-items:center;justify-content:center;
-}
+.pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:100%;max-width:280px;}
+.pk{height:64px;border-radius:12px;background:var(--card);border:1.5px solid var(--border);font-family:'Montserrat',sans-serif;font-size:24px;font-weight:700;color:var(--text);cursor:pointer;transition:all .12s;display:flex;align-items:center;justify-content:center;}
 .pk:active{background:var(--blue2);border-color:var(--blue2);transform:scale(.92);}
 .pk.del{font-size:18px;color:var(--muted);}
 .pk.zero{grid-column:2;}
-.pin-err{
-  height:18px;text-align:center;font-size:11px;
-  font-weight:700;color:var(--red);margin-top:10px;
-  font-family:'Montserrat',sans-serif;
-}
+.pin-err{height:18px;text-align:center;font-size:11px;font-weight:700;color:var(--red);margin-top:10px;font-family:'Montserrat',sans-serif;}
 @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-10px)}40%{transform:translateX(10px)}60%{transform:translateX(-8px)}80%{transform:translateX(6px)}}
 .shake{animation:shake .4s ease;}
-
-/* ── SCREEN: SETUP NAME ── */
-.setup-title{
-  font-family:'Montserrat',sans-serif;
-  font-size:20px;font-weight:800;text-align:center;margin-bottom:6px;
-}
+.setup-title{font-family:'Montserrat',sans-serif;font-size:20px;font-weight:800;text-align:center;margin-bottom:6px;}
 .setup-hint{font-size:12px;color:var(--muted);text-align:center;margin-bottom:22px;line-height:1.5;}
-
-/* ── SCREEN: CHANGE PIN ── */
-.change-pin-info{
-  background:rgba(37,99,174,.1);border:1px solid rgba(37,99,174,.25);
-  border-radius:10px;padding:12px 14px;margin-bottom:18px;
-  font-size:12px;color:var(--blue3);width:100%;max-width:310px;text-align:center;
-  line-height:1.5;
-}
-
-/* ── APP SCREEN ── */
-#s-app{
-  padding:0;justify-content:flex-start;
-  overflow-y:auto;-webkit-overflow-scrolling:touch;
-}
-
-.app-bar{
-  width:100%;background:rgba(10,22,40,.95);
-  backdrop-filter:blur(16px);
-  border-bottom:1px solid var(--border);
-  padding:12px 18px;
-  display:flex;align-items:center;justify-content:space-between;
-  flex-shrink:0;
-}
+.change-pin-info{background:rgba(37,99,174,.1);border:1px solid rgba(37,99,174,.25);border-radius:10px;padding:12px 14px;margin-bottom:18px;font-size:12px;color:var(--blue3);width:100%;max-width:310px;text-align:center;line-height:1.5;}
+#s-app{padding:0;justify-content:flex-start;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.app-bar{width:100%;background:rgba(10,22,40,.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:12px 18px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
 .ab-logo-img{height:28px;width:auto;}
-.ab-worker{
-  font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;
-  color:var(--blue3);background:rgba(27,79,140,.2);
-  border:1px solid rgba(27,79,140,.3);
-  padding:4px 10px;border-radius:20px;
-  max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-}
-
-.lang-strip{
-  width:100%;padding:7px 14px;
-  background:var(--card);border-bottom:1px solid var(--border);
-  display:flex;gap:5px;overflow-x:auto;flex-shrink:0;
-}
-.ls-btn{
-  padding:4px 9px;border-radius:6px;border:1px solid var(--border);
-  background:transparent;font-size:11px;cursor:pointer;color:var(--muted);
-  white-space:nowrap;font-family:'Inter',sans-serif;transition:all .15s;flex-shrink:0;
-}
+.ab-worker{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;color:var(--blue3);background:rgba(27,79,140,.2);border:1px solid rgba(27,79,140,.3);padding:4px 10px;border-radius:20px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.lang-strip{width:100%;padding:7px 14px;background:var(--card);border-bottom:1px solid var(--border);display:flex;gap:5px;overflow-x:auto;flex-shrink:0;}
+.ls-btn{padding:4px 9px;border-radius:6px;border:1px solid var(--border);background:transparent;font-size:11px;cursor:pointer;color:var(--muted);white-space:nowrap;font-family:'Inter',sans-serif;transition:all .15s;flex-shrink:0;}
 .ls-btn.active{background:var(--blue2);border-color:var(--blue2);color:#fff;}
-
 .app-content{width:100%;padding:16px 18px 36px;flex:1;}
-
-/* GPS bar */
-.gps-bar{
-  border-radius:10px;padding:9px 13px;margin-bottom:14px;
-  display:flex;align-items:center;gap:7px;
-  font-size:11px;font-weight:600;font-family:'Montserrat',sans-serif;
-}
-.gps-bar.ok {background:rgba(56,224,123,.08);border:1px solid rgba(56,224,123,.2);color:var(--green);}
-.gps-bar.bad{background:rgba(255,71,87,.08); border:1px solid rgba(255,71,87,.2); color:var(--red);}
+.gps-bar{border-radius:10px;padding:9px 13px;margin-bottom:14px;display:flex;align-items:center;gap:7px;font-size:11px;font-weight:600;font-family:'Montserrat',sans-serif;}
+.gps-bar.ok{background:rgba(56,224,123,.08);border:1px solid rgba(56,224,123,.2);color:var(--green);}
+.gps-bar.bad{background:rgba(255,71,87,.08);border:1px solid rgba(255,71,87,.2);color:var(--red);}
 .gps-bar.loading{background:rgba(37,99,174,.08);border:1px solid rgba(37,99,174,.2);color:var(--blue3);}
 .gps-dot{width:7px;height:7px;border-radius:50%;background:currentColor;animation:blink 1.2s infinite;flex-shrink:0;}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
-
-/* Clock */
 .clock-block{text-align:center;margin-bottom:4px;}
-.clock-time{
-  font-family:'Montserrat',sans-serif;font-size:52px;font-weight:900;
-  color:var(--blue2);letter-spacing:-1px;line-height:1;
-}
+.clock-time{font-family:'Montserrat',sans-serif;font-size:52px;font-weight:900;color:var(--blue2);letter-spacing:-1px;line-height:1;}
 .clock-date{font-size:11px;color:var(--muted);margin-top:3px;}
-
-/* Geo indicator */
-.geo-ind{
-  border-radius:12px;padding:12px 16px;
-  text-align:center;margin:10px 0;transition:all .3s;
-}
-.geo-ind.ok {background:rgba(56,224,123,.07);border:1px solid rgba(56,224,123,.2);}
-.geo-ind.bad{background:rgba(255,71,87,.07); border:1px solid rgba(255,71,87,.2);}
-.geo-ind.unk{background:rgba(30,48,80,.4);   border:1px solid var(--border);}
+.geo-ind{border-radius:12px;padding:12px 16px;text-align:center;margin:10px 0;transition:all .3s;}
+.geo-ind.ok{background:rgba(56,224,123,.07);border:1px solid rgba(56,224,123,.2);}
+.geo-ind.bad{background:rgba(255,71,87,.07);border:1px solid rgba(255,71,87,.2);}
+.geo-ind.unk{background:rgba(30,48,80,.4);border:1px solid var(--border);}
 .geo-big{font-size:28px;margin-bottom:3px;}
 .geo-label{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:800;letter-spacing:.5px;}
 .geo-dist{font-size:10px;color:var(--muted);margin-top:2px;}
-
-/* BIG BUTTON */
 .checkin-wrap{display:flex;justify-content:center;padding:14px 0 8px;}
-.checkin-btn{
-  width:175px;height:175px;border-radius:50%;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  cursor:pointer;transition:all .2s;
-  border:4px solid var(--green);background:rgba(56,224,123,.07);
-  position:relative;
-}
-.checkin-btn::before{
-  content:'';position:absolute;inset:-12px;border-radius:50%;
-  border:2px solid rgba(56,224,123,.15);
-  animation:rpulse 2.5s infinite;
-}
+.checkin-btn{width:175px;height:175px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;border:4px solid var(--green);background:rgba(56,224,123,.07);position:relative;}
+.checkin-btn::before{content:'';position:absolute;inset:-12px;border-radius:50%;border:2px solid rgba(56,224,123,.15);animation:rpulse 2.5s infinite;}
 @keyframes rpulse{0%{transform:scale(1);opacity:.6}50%{transform:scale(1.07);opacity:.15}100%{transform:scale(1);opacity:.6}}
 .checkin-btn:active{transform:scale(.93);}
 .checkin-btn.in{border-color:var(--red);background:rgba(255,71,87,.07);}
 .checkin-btn.in::before{border-color:rgba(255,71,87,.15);}
 .cb-icon{font-size:34px;margin-bottom:5px;line-height:1;}
-.cb-label{
-  font-family:'Montserrat',sans-serif;font-size:12px;font-weight:800;
-  letter-spacing:1px;text-align:center;color:var(--green);
-  text-transform:uppercase;line-height:1.3;
-}
+.cb-label{font-family:'Montserrat',sans-serif;font-size:12px;font-weight:800;letter-spacing:1px;text-align:center;color:var(--green);text-transform:uppercase;line-height:1.3;}
 .checkin-btn.in .cb-label{color:var(--red);}
-
-.checkin-status{
-  text-align:center;font-size:11px;color:var(--muted);
-  min-height:30px;line-height:1.6;padding:0 6px;
-}
-
-/* Divider */
+.checkin-status{text-align:center;font-size:11px;color:var(--muted);min-height:30px;line-height:1.6;padding:0 6px;}
 .divider{height:1px;background:var(--border);margin:14px 0;}
-
-/* Tasks */
-.section-label{
-  font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;
-  text-transform:uppercase;letter-spacing:2px;color:var(--muted);
-  margin-bottom:9px;display:flex;align-items:center;gap:8px;
-}
+.section-label{font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:9px;display:flex;align-items:center;gap:8px;}
 .section-label::after{content:'';flex:1;height:1px;background:var(--border);}
-.task-card{
-  background:var(--card);border:1px solid var(--border);
-  border-radius:11px;padding:13px 15px;margin-bottom:9px;
-  display:flex;gap:11px;align-items:flex-start;
-  border-left:3px solid transparent;
-}
+.task-card{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:13px 15px;margin-bottom:9px;display:flex;gap:11px;align-items:flex-start;border-left:3px solid transparent;}
 .task-card.urgent{border-left-color:var(--red);}
 .task-card.normal{border-left-color:var(--amber);}
-.task-card.info  {border-left-color:var(--blue2);}
+.task-card.info{border-left-color:var(--blue2);}
 .task-dot{width:8px;height:8px;border-radius:50%;margin-top:4px;flex-shrink:0;}
 .task-text{font-size:13px;line-height:1.5;}
 .task-time{font-size:10px;color:var(--muted);margin-top:3px;}
 .no-task{text-align:center;color:var(--muted);font-size:12px;padding:16px 0;}
-
-/* WA Share button */
-.wa-share-btn{
-  width:100%;padding:13px;margin-top:10px;
-  background:rgba(37,211,102,.1);border:1.5px solid rgba(37,211,102,.3);
-  border-radius:11px;color:#25d366;
-  font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;
-  letter-spacing:1px;cursor:pointer;transition:all .18s;
-  display:flex;align-items:center;justify-content:center;gap:8px;
-}
+.wa-share-btn{width:100%;padding:13px;margin-top:10px;background:rgba(37,211,102,.1);border:1.5px solid rgba(37,211,102,.3);border-radius:11px;color:#25d366;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;cursor:pointer;transition:all .18s;display:flex;align-items:center;justify-content:center;gap:8px;}
 .wa-share-btn:active{background:#25d366;color:#fff;}
-
-/* Settings strip */
-.settings-row{
-  display:flex;gap:8px;margin-top:8px;
-}
-.set-btn{
-  flex:1;padding:11px 8px;
-  background:var(--card);border:1px solid var(--border);
-  border-radius:10px;color:var(--muted);
-  font-family:'Inter',sans-serif;font-size:11px;
-  cursor:pointer;transition:all .18s;text-align:center;
-}
+.settings-row{display:flex;gap:8px;margin-top:8px;}
+.set-btn{flex:1;padding:11px 8px;background:var(--card);border:1px solid var(--border);border-radius:10px;color:var(--muted);font-family:'Inter',sans-serif;font-size:11px;cursor:pointer;transition:all .18s;text-align:center;}
 .set-btn:active{border-color:var(--blue2);color:var(--blue3);}
-
-/* Toast */
-.toast{
-  position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
-  padding:11px 20px;border-radius:10px;font-size:12px;font-weight:600;
-  display:none;z-index:500;animation:tup .3s ease;
-  font-family:'Montserrat',sans-serif;white-space:nowrap;
-  border:1px solid;
-}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);padding:11px 20px;border-radius:10px;font-size:12px;font-weight:600;display:none;z-index:500;animation:tup .3s ease;font-family:'Montserrat',sans-serif;white-space:nowrap;border:1px solid;}
 .toast.show{display:flex;align-items:center;gap:7px;}
-.toast.ok {background:rgba(56,224,123,.1);border-color:var(--green);color:var(--green);}
-.toast.err{background:rgba(255,71,87,.1); border-color:var(--red);  color:var(--red);}
+.toast.ok{background:rgba(56,224,123,.1);border-color:var(--green);color:var(--green);}
+.toast.err{background:rgba(255,71,87,.1);border-color:var(--red);color:var(--red);}
 .toast.inf{background:rgba(37,99,174,.12);border-color:var(--blue2);color:var(--blue3);}
 @keyframes tup{from{transform:translateX(-50%) translateY(14px);opacity:0}to{transform:translateX(-50%) translateY(0);opacity:1}}
-</style>
-<style>
-/* ── SPLASH SCREEN ── */
-#s-splash{
-  position:fixed;inset:0;z-index:999;
-  background:linear-gradient(135deg,#0A1628 0%,#1B3A6B 60%,#0A1628 100%);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  transition:opacity .6s ease;
-}
-#s-splash.fade-out{ opacity:0; pointer-events:none; }
-.splash-logo{ width:220px;height:auto;display:block;margin-bottom:24px;animation:splashIn 1s ease forwards; }
-.splash-badge{
-  display:inline-flex;align-items:center;gap:8px;
-  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);
-  padding:8px 20px;border-radius:30px;
-  font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;
-  letter-spacing:2px;color:rgba(255,255,255,.8);
-  animation:splashIn 1s ease .3s both;
-}
-.splash-tagline{
-  font-family:'Montserrat',sans-serif;font-size:13px;font-weight:400;
-  color:rgba(255,255,255,.4);margin-top:12px;letter-spacing:1px;
-  animation:splashIn 1s ease .5s both;
-}
-.splash-bar{
-  position:absolute;bottom:60px;
-  width:120px;height:3px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden;
-}
-.splash-bar-fill{
-  height:100%;width:0%;background:linear-gradient(90deg,#FF6B35,#E8621A);
-  border-radius:3px;animation:splashLoad 2.5s ease forwards;
-}
-@keyframes splashIn{
-  from{opacity:0;transform:translateY(20px)}
-  to{opacity:1;transform:translateY(0)}
-}
-@keyframes splashLoad{
-  from{width:0%} to{width:100%}
-}
+#s-splash{position:fixed;inset:0;z-index:999;background:linear-gradient(135deg,#0A1628 0%,#1B3A6B 60%,#0A1628 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .6s ease;}
+#s-splash.fade-out{opacity:0;pointer-events:none;}
+.splash-logo{width:220px;height:auto;display:block;margin-bottom:24px;animation:splashIn 1s ease forwards;}
+.splash-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);padding:8px 20px;border-radius:30px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,.8);animation:splashIn 1s ease .3s both;}
+.splash-tagline{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:400;color:rgba(255,255,255,.4);margin-top:12px;letter-spacing:1px;animation:splashIn 1s ease .5s both;}
+.splash-bar{position:absolute;bottom:60px;width:120px;height:3px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden;}
+.splash-bar-fill{height:100%;width:0%;background:linear-gradient(90deg,#FF6B35,#E8621A);border-radius:3px;animation:splashLoad 2.5s ease forwards;}
+@keyframes splashIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes splashLoad{from{width:0%}to{width:100%}}
 </style>
 </head>
 <body>
 
-<!-- ══════════════════════════════
-     SPLASH SCREEN
-══════════════════════════════ -->
 <div id="s-splash">
   <svg class="splash-logo" viewBox="0 0 400 280" xmlns="http://www.w3.org/2000/svg">
     <rect x="148" y="60" width="104" height="140" fill="white"/>
@@ -398,9 +148,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);}
   <div class="splash-bar"><div class="splash-bar-fill"></div></div>
 </div>
 
-<!-- ══════════════════════════════
-     SCREEN 1: IDIOMA
-══════════════════════════════ -->
+<!-- IDIOMA -->
 <div class="screen" id="s-lang">
   <div class="logo-wrap">
     <svg class="logo-img" viewBox="0 0 400 280" xmlns="http://www.w3.org/2000/svg">
@@ -414,14 +162,10 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);}
     </svg>
     <div class="logo-pill">📍 ObraControl GPS</div>
   </div>
-
   <div class="steps-indicator">
-    <div class="si-dot active" id="si0"></div>
-    <div class="si-dot" id="si1"></div>
-    <div class="si-dot" id="si2"></div>
-    <div class="si-dot" id="si3"></div>
+    <div class="si-dot active" id="si0"></div><div class="si-dot" id="si1"></div>
+    <div class="si-dot" id="si2"></div><div class="si-dot" id="si3"></div>
   </div>
-
   <div class="lang-title" id="lt">Elige tu idioma</div>
   <div class="lang-grid">
     <div class="lang-btn sel" onclick="selLang('es',this)"><div class="lf">🇪🇸</div><div><div class="ln">Español</div><div class="lnat">Español</div></div></div>
@@ -434,9 +178,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);}
   <button class="btn-main" onclick="goTo('s-name')">Continuar →</button>
 </div>
 
-<!-- ══════════════════════════════
-     SCREEN 2: DNI/NIE + NOMBRE
-══════════════════════════════ -->
+<!-- DNI/NIE -->
 <div class="screen hidden" id="s-name">
   <div class="logo-wrap" style="margin-bottom:16px;">
     <svg class="logo-img" style="width:130px;" viewBox="0 0 400 280" xmlns="http://www.w3.org/2000/svg">
@@ -449,51 +191,33 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);}
       <text x="200" y="272" text-anchor="middle" font-family="Montserrat,Arial" font-size="56" font-weight="900" fill="#1B4F8C" letter-spacing="4">LANCE</text>
     </svg>
   </div>
-
   <div class="steps-indicator">
-    <div class="si-dot done"></div>
-    <div class="si-dot active"></div>
-    <div class="si-dot"></div>
-    <div class="si-dot"></div>
+    <div class="si-dot done"></div><div class="si-dot active"></div>
+    <div class="si-dot"></div><div class="si-dot"></div>
   </div>
-
   <div class="setup-title" id="name-title">Identifícate</div>
   <div class="setup-hint" id="name-hint">Introduce tu DNI o NIE para verificar tu identidad.</div>
-
   <div class="form-group">
     <label class="form-lbl" id="name-lbl">DNI o NIE</label>
     <input class="form-inp" id="worker-doc-input" type="text" placeholder="Ej: X1234567A" autocomplete="off" maxlength="9" style="display:block;text-transform:uppercase;letter-spacing:2px;font-weight:700;"/>
   </div>
-
   <div id="verify-msg" style="height:18px;text-align:center;font-size:11px;font-weight:700;color:var(--red);margin-top:-8px;margin-bottom:8px;font-family:'Montserrat',sans-serif;"></div>
-
   <button class="btn-main" onclick="verifyDoc()" id="btn-name">Verificar →</button>
   <button class="btn-sec" onclick="goTo('s-lang')">← Volver</button>
 </div>
 
-<!-- ══════════════════════════════
-     SCREEN 3: CREAR PIN
-══════════════════════════════ -->
+<!-- CREAR PIN -->
 <div class="screen hidden" id="s-setpin">
   <div class="steps-indicator">
-    <div class="si-dot done"></div>
-    <div class="si-dot done"></div>
-    <div class="si-dot active"></div>
-    <div class="si-dot"></div>
+    <div class="si-dot done"></div><div class="si-dot done"></div>
+    <div class="si-dot active"></div><div class="si-dot"></div>
   </div>
-
   <div class="setup-title" id="setpin-title">Crea tu PIN</div>
-  <div class="change-pin-info" id="setpin-info">
-    Elige 4 dígitos que recuerdes fácilmente.<br>Los usarás cada vez que entres a la app.
-  </div>
-
+  <div class="change-pin-info" id="setpin-info">Elige 4 dígitos que recuerdes fácilmente.<br>Los usarás cada vez que entres a la app.</div>
   <div class="pin-dots">
-    <div class="pdot" id="sp0"></div>
-    <div class="pdot" id="sp1"></div>
-    <div class="pdot" id="sp2"></div>
-    <div class="pdot" id="sp3"></div>
+    <div class="pdot" id="sp0"></div><div class="pdot" id="sp1"></div>
+    <div class="pdot" id="sp2"></div><div class="pdot" id="sp3"></div>
   </div>
-
   <div class="pin-pad" id="setpin-pad">
     <div class="pk" onclick="spp('1')">1</div><div class="pk" onclick="spp('2')">2</div><div class="pk" onclick="spp('3')">3</div>
     <div class="pk" onclick="spp('4')">4</div><div class="pk" onclick="spp('5')">5</div><div class="pk" onclick="spp('6')">6</div>
@@ -504,25 +228,18 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);}
   <button class="btn-sec" onclick="goTo('s-name')">← Volver</button>
 </div>
 
-<!-- ══════════════════════════════
-     SCREEN 4: LOGIN CON PIN
-══════════════════════════════ -->
+<!-- LOGIN PIN -->
 <div class="screen hidden" id="s-pin">
   <div class="steps-indicator">
-    <div class="si-dot done"></div>
-    <div class="si-dot done"></div>
-    <div class="si-dot done"></div>
-    <div class="si-dot active"></div>
+    <div class="si-dot done"></div><div class="si-dot done"></div>
+    <div class="si-dot done"></div><div class="si-dot active"></div>
   </div>
-
   <div class="setup-title" id="pin-title">Tu PIN de acceso</div>
   <div class="setup-hint" id="pin-hint" style="margin-bottom:0">Introduce tus 4 dígitos</div>
-
   <div class="pin-dots">
     <div class="pdot" id="pd0"></div><div class="pdot" id="pd1"></div>
     <div class="pdot" id="pd2"></div><div class="pdot" id="pd3"></div>
   </div>
-
   <div class="pin-pad" id="login-pad">
     <div class="pk" onclick="pk('1')">1</div><div class="pk" onclick="pk('2')">2</div><div class="pk" onclick="pk('3')">3</div>
     <div class="pk" onclick="pk('4')">4</div><div class="pk" onclick="pk('5')">5</div><div class="pk" onclick="pk('6')">6</div>
@@ -532,11 +249,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);}
   <div class="pin-err" id="pin-err"></div>
 </div>
 
-<!-- ══════════════════════════════
-     SCREEN 5: APP PRINCIPAL
-══════════════════════════════ -->
+<!-- APP PRINCIPAL -->
 <div class="screen hidden" id="s-app">
-
   <div class="app-bar">
     <svg class="ab-logo-img" viewBox="0 0 300 80" xmlns="http://www.w3.org/2000/svg">
       <rect x="10" y="5" width="35" height="50" fill="#1B4F8C"/>
@@ -548,7 +262,6 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);}
     </svg>
     <div class="ab-worker" id="worker-badge">👷 Operario</div>
   </div>
-
   <div class="lang-strip">
     <button class="ls-btn active" data-lang="es" onclick="switchLang('es')">🇪🇸</button>
     <button class="ls-btn" data-lang="ca" onclick="switchLang('ca')">🏴</button>
@@ -557,38 +270,26 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);}
     <button class="ls-btn" data-lang="fr" onclick="switchLang('fr')">🇫🇷</button>
     <button class="ls-btn" data-lang="en" onclick="switchLang('en')">🇬🇧</button>
   </div>
-
   <div class="app-content">
-
-    <!-- OFFLINE BANNER -->
     <div id="offline-banner" style="display:none;background:#FEF3C7;border:1px solid #FDE68A;border-radius:10px;padding:9px 14px;margin-bottom:12px;font-size:11px;font-weight:600;color:#D97706;font-family:'Montserrat',sans-serif;align-items:center;gap:8px;">
-      📵 Sin conexión — Fichaje guardado localmente. Se enviará al recuperar internet.
+      📵 Sin conexión — Fichaje guardado localmente.
     </div>
-
-    <div class="gps-bar loading" id="gps-bar">
-      <div class="gps-dot"></div>
-      <span id="gps-txt">Buscando GPS...</span>
-    </div>
-
-    <!-- OBRA ASIGNADA -->
+    <div class="gps-bar loading" id="gps-bar"><div class="gps-dot"></div><span id="gps-txt">Buscando GPS...</span></div>
     <div id="obra-card" style="background:rgba(27,79,140,.1);border:1px solid rgba(27,79,140,.25);border-radius:10px;padding:10px 14px;margin-bottom:10px;display:none;">
       <div style="font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:1.5px;color:var(--blue3);margin-bottom:3px;">📍 OBRA ASIGNADA</div>
       <div id="obra-nombre" style="font-size:13px;font-weight:700;color:var(--text)"></div>
       <div id="obra-distancia" style="font-size:11px;color:var(--muted);margin-top:2px;"></div>
     </div>
-
     <div class="clock-block">
       <div class="clock-time" id="clock">--:--</div>
       <div class="clock-date" id="clock-date"></div>
     </div>
-
     <div class="geo-ind unk" id="geo-ind">
       <div class="geo-big" id="geo-big">📡</div>
       <div class="geo-label" id="geo-label">Buscando señal GPS...</div>
       <div class="geo-dist" id="geo-dist"></div>
       <div id="gps-precision" style="font-size:9px;color:var(--muted);margin-top:3px;"></div>
     </div>
-
     <div class="checkin-wrap">
       <button class="checkin-btn" id="checkin-btn" onclick="toggleCheckin()" type="button" style="background:rgba(56,224,123,.07);border:4px solid var(--green);cursor:pointer;">
         <div class="cb-icon" id="cb-icon">📍</div>
@@ -596,182 +297,43 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);}
       </button>
     </div>
     <div class="checkin-status" id="checkin-status"></div>
-
-    <!-- ÚLTIMO FICHAJE -->
     <div id="ultimo-fichaje" style="display:none;text-align:center;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px;margin-top:8px;">
       <div style="font-size:9px;font-family:'Montserrat',sans-serif;font-weight:700;letter-spacing:1.5px;color:var(--muted);margin-bottom:4px;">ÚLTIMO FICHAJE</div>
       <div id="ultimo-fichaje-txt" style="font-size:12px;font-weight:600;color:var(--text)"></div>
     </div>
-
     <div class="divider"></div>
-
     <div class="section-label" id="tasks-lbl">MIS TAREAS</div>
     <div id="task-list"></div>
-
-    <!-- WhatsApp share -->
     <button class="wa-share-btn" onclick="shareWA()">
-      <svg width="18" height="18" viewBox="0 0 18 18" fill="#25d366"><path d="M9 1C4.6 1 1 4.6 1 9c0 1.4.4 2.8 1 4L1 17l4.1-1c1.1.6 2.5 1 3.9 1C13.4 17 17 13.4 17 9S13.4 1 9 1zm3.6 11.2c-.2.6-1.1 1.1-1.5 1.1-.4.1-.9.1-1.4-.1-.3-.1-.9-.3-1.7-.7-1.5-.8-2.5-2.3-2.6-2.4-.1-.1-.7-1-.7-1.9 0-.9.5-1.3.6-1.5.2-.2.4-.3.5-.3h.4c.1 0 .3.1.4.4.2.4.6 1.5.7 1.6.1.1.1.3 0 .4-.1.1-.1.2-.2.3-.1.2-.2.3-.1.5.4.7 1 1.4 1.7 1.8.2.1.4 0 .5-.1.2-.2.4-.5.5-.7.1-.2.3-.2.5-.1l1.4.7c.2.1.4.3.4.5 0 .2-.1.8-.2 1.2z"/></svg>
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="#25d366"><path d="M9 1C4.6 1 1 4.6 1 9c0 1.4.4 2.8 1 4L1 17l4.1-1C5.7 16.7 6.8 17 8 17c3.9 0 7-3.1 7-7S12.4 1 9 1zm3.6 11.2c-.2.6-1.1 1.1-1.5 1.1-.4.1-.9.1-1.4-.1-.3-.1-.9-.3-1.7-.7-1.5-.8-2.5-2.3-2.6-2.4-.1-.1-.7-1-.7-1.9 0-.9.5-1.3.6-1.5.2-.2.4-.3.5-.3h.4c.1 0 .3.1.4.4.2.4.6 1.5.7 1.6.1.1.1.3 0 .4-.1.1-.1.2-.2.3-.1.2-.2.3-.1.5.4.7 1 1.4 1.7 1.8.2.1.4 0 .5-.1.2-.2.4-.5.5-.7.1-.2.3-.2.5-.1l1.4.7c.2.1.4.3.4.5 0 .2-.1.8-.2 1.2z"/></svg>
       <span id="wa-share-txt">Compartir app por WhatsApp</span>
     </button>
-
-    <!-- Settings -->
     <div class="settings-row">
       <button class="set-btn" onclick="goTo('s-setpin');resetSetPin(true);" id="change-pin-btn">🔐 Cambiar PIN</button>
       <button class="set-btn" onclick="logout()" id="logout-btn">↩ Cerrar sesión</button>
     </div>
-
-    <!-- Instalar en pantalla inicio -->
     <button id="install-btn" onclick="installApp()" style="display:none;width:100%;margin-top:10px;padding:13px;background:linear-gradient(135deg,var(--blue),var(--blue2));border:none;border-radius:11px;color:#fff;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;cursor:pointer;align-items:center;justify-content:center;gap:8px;">
       📲 AÑADIR A PANTALLA DE INICIO
     </button>
-
-    <!-- Instrucciones iOS -->
     <div id="ios-install" style="display:none;background:rgba(27,79,140,.15);border:1px solid rgba(27,79,140,.3);border-radius:11px;padding:12px 14px;margin-top:10px;font-size:11px;color:var(--blue3);line-height:1.6;">
       <div style="font-family:'Montserrat',sans-serif;font-weight:700;margin-bottom:5px;">📲 Añadir a pantalla de inicio (iPhone/iPad):</div>
       1. Toca el botón <strong>Compartir</strong> ⬆️<br>
       2. Selecciona <strong>"Añadir a pantalla de inicio"</strong><br>
-      3. Toca <strong>"Añadir"</strong> — aparecerá el icono de Lance
+      3. Toca <strong>"Añadir"</strong>
     </div>
-
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-// ─────────────────────────────────────
-// TRANSLATIONS
-// ─────────────────────────────────────
-const TX = {
-  es:{
-    lang_select:"Elige tu idioma",
-    name_title:"¿Cómo te llamas?",name_hint:"Introduce tu nombre completo.\nAparecerá en el sistema de obra.",name_lbl:"Nombre completo",name_ph:"Ej: Andrei Popescu",
-    setpin_title:"Crea tu PIN",setpin_info:"Elige 4 dígitos que recuerdes fácilmente.\nLos usarás cada vez que entres a la app.",
-    changepin_title:"Cambiar PIN",changepin_info:"Introduce tu nuevo PIN de 4 dígitos.",
-    pin_title:"Tu PIN de acceso",pin_hint:"Introduce tus 4 dígitos",pin_err:"PIN incorrecto. Inténtalo de nuevo.",
-    gps_search:"Buscando GPS...",gps_ok:"En zona de obra",gps_bad:"Fuera de zona",
-    geo_in:"ESTÁS EN ZONA DE OBRA",geo_out:"ESTÁS FUERA DE LA ZONA",geo_unk:"Buscando señal GPS...",
-    geo_dist:"Distancia:",geo_rad:"Radio: 150m",
-    checkin:"FICHAR\nENTRADA",checkout:"FICHAR\nSALIDA",
-    tasks:"MIS TAREAS",no_tasks:"Sin tareas asignadas hoy.",
-    wa_share:"Compartir app por WhatsApp",
-    change_pin:"🔐 Cambiar PIN",logout:"↩ Cerrar sesión",
-    toast_in:"✅ Entrada registrada",toast_out:"🔴 Salida registrada",
-    toast_pin:"✅ PIN guardado correctamente",toast_wa:"✅ Abriendo WhatsApp...",
-    continue:"Continuar →",next:"Siguiente →",back:"← Volver"
-  },
-  ca:{
-    lang_select:"Tria el teu idioma",
-    name_title:"Com et dius?",name_hint:"Introdueix el teu nom complet.\nApareixerà al sistema d'obra.",name_lbl:"Nom complet",name_ph:"Ex: Andrei Popescu",
-    setpin_title:"Crea el teu PIN",setpin_info:"Tria 4 dígits que recordis fàcilment.\nEls usaràs cada vegada que entris a l'app.",
-    changepin_title:"Canviar PIN",changepin_info:"Introdueix el teu nou PIN de 4 dígits.",
-    pin_title:"El teu PIN d'accés",pin_hint:"Introdueix els teus 4 dígits",pin_err:"PIN incorrecte. Torna-ho a intentar.",
-    gps_search:"Cercant GPS...",gps_ok:"En zona d'obra",gps_bad:"Fora de zona",
-    geo_in:"ESTÀS EN ZONA D'OBRA",geo_out:"ESTÀS FORA DE LA ZONA",geo_unk:"Cercant senyal GPS...",
-    geo_dist:"Distància:",geo_rad:"Radi: 150m",
-    checkin:"FITXAR\nENTRADA",checkout:"FITXAR\nSORTIDA",
-    tasks:"LES MEVES TASQUES",no_tasks:"Sense tasques assignades avui.",
-    wa_share:"Compartir app per WhatsApp",
-    change_pin:"🔐 Canviar PIN",logout:"↩ Tancar sessió",
-    toast_in:"✅ Entrada registrada",toast_out:"🔴 Sortida registrada",
-    toast_pin:"✅ PIN desat correctament",toast_wa:"✅ Obrint WhatsApp...",
-    continue:"Continuar →",next:"Següent →",back:"← Tornar"
-  },
-  ro:{
-    lang_select:"Alege limba ta",
-    name_title:"Cum te numești?",name_hint:"Introdu numele tău complet.\nVa apărea în sistemul de șantier.",name_lbl:"Nume complet",name_ph:"Ex: Andrei Popescu",
-    setpin_title:"Creează PIN-ul tău",setpin_info:"Alege 4 cifre pe care le reții ușor.\nLe vei folosi de fiecare dată când intri în aplicație.",
-    changepin_title:"Schimbă PIN-ul",changepin_info:"Introdu noul tău PIN de 4 cifre.",
-    pin_title:"PIN-ul tău de acces",pin_hint:"Introdu cele 4 cifre",pin_err:"PIN incorect. Încearcă din nou.",
-    gps_search:"Căutare GPS...",gps_ok:"În zona șantierului",gps_bad:"În afara zonei",
-    geo_in:"EȘTI ÎN ZONA ȘANTIERULUI",geo_out:"EȘTI ÎN AFARA ZONEI",geo_unk:"Căutare semnal GPS...",
-    geo_dist:"Distanță:",geo_rad:"Raza: 150m",
-    checkin:"INTRARE\nÎNREGISTRARE",checkout:"IEȘIRE\nÎNREGISTRARE",
-    tasks:"SARCINILE MELE",no_tasks:"Nicio sarcină asignată azi.",
-    wa_share:"Trimite aplicația pe WhatsApp",
-    change_pin:"🔐 Schimbă PIN",logout:"↩ Deconectare",
-    toast_in:"✅ Intrare înregistrată",toast_out:"🔴 Ieșire înregistrată",
-    toast_pin:"✅ PIN salvat",toast_wa:"✅ Se deschide WhatsApp...",
-    continue:"Continuare →",next:"Următor →",back:"← Înapoi"
-  },
-  ar:{
-    lang_select:"اختر لغتك",
-    name_title:"ما اسمك؟",name_hint:"أدخل اسمك الكامل.\nسيظهر في نظام الموقع.",name_lbl:"الاسم الكامل",name_ph:"مثال: سعيد بوحسين",
-    setpin_title:"أنشئ رمز PIN",setpin_info:"اختر 4 أرقام سهلة التذكر.\nستستخدمها في كل مرة تدخل فيها.",
-    changepin_title:"تغيير PIN",changepin_info:"أدخل رمز PIN الجديد المكون من 4 أرقام.",
-    pin_title:"رمز PIN الخاص بك",pin_hint:"أدخل الـ 4 أرقام",pin_err:"رمز PIN غير صحيح. حاول مرة أخرى.",
-    gps_search:"جارٍ البحث...",gps_ok:"داخل نطاق الموقع",gps_bad:"خارج النطاق",
-    geo_in:"أنت داخل نطاق الموقع",geo_out:"أنت خارج النطاق",geo_unk:"جارٍ البحث عن GPS...",
-    geo_dist:"المسافة:",geo_rad:"النطاق: 150م",
-    checkin:"تسجيل\nالدخول",checkout:"تسجيل\nالخروج",
-    tasks:"مهامي",no_tasks:"لا توجد مهام اليوم.",
-    wa_share:"مشاركة التطبيق عبر واتساب",
-    change_pin:"🔐 تغيير PIN",logout:"↩ تسجيل الخروج",
-    toast_in:"✅ تم تسجيل الدخول",toast_out:"🔴 تم تسجيل الخروج",
-    toast_pin:"✅ تم حفظ PIN",toast_wa:"✅ جارٍ فتح واتساب...",
-    continue:"متابعة →",next:"التالي →",back:"→ رجوع"
-  },
-  fr:{
-    lang_select:"Choisis ta langue",
-    name_title:"Comment tu t'appelles?",name_hint:"Entre ton nom complet.\nIl apparaîtra dans le système de chantier.",name_lbl:"Nom complet",name_ph:"Ex: Petre Dinu",
-    setpin_title:"Crée ton PIN",setpin_info:"Choisis 4 chiffres faciles à retenir.\nTu les utiliseras à chaque connexion.",
-    changepin_title:"Changer le PIN",changepin_info:"Entre ton nouveau PIN de 4 chiffres.",
-    pin_title:"Ton code PIN",pin_hint:"Entre tes 4 chiffres",pin_err:"PIN incorrect. Réessaie.",
-    gps_search:"Recherche GPS...",gps_ok:"Dans la zone chantier",gps_bad:"Hors de la zone",
-    geo_in:"TU ES DANS LA ZONE",geo_out:"TU ES HORS DE LA ZONE",geo_unk:"Recherche signal GPS...",
-    geo_dist:"Distance:",geo_rad:"Rayon: 150m",
-    checkin:"POINTER\nENTRÉE",checkout:"POINTER\nSORTIE",
-    tasks:"MES TÂCHES",no_tasks:"Aucune tâche aujourd'hui.",
-    wa_share:"Partager l'app sur WhatsApp",
-    change_pin:"🔐 Changer PIN",logout:"↩ Déconnexion",
-    toast_in:"✅ Entrée enregistrée",toast_out:"🔴 Sortie enregistrée",
-    toast_pin:"✅ PIN sauvegardé",toast_wa:"✅ Ouverture WhatsApp...",
-    continue:"Continuer →",next:"Suivant →",back:"← Retour"
-  },
-  en:{
-    lang_select:"Choose your language",
-    name_title:"What's your name?",name_hint:"Enter your full name.\nIt will appear in the site system.",name_lbl:"Full name",name_ph:"Ex: Andrei Popescu",
-    setpin_title:"Create your PIN",setpin_info:"Choose 4 digits you'll remember.\nYou'll use them every time you log in.",
-    changepin_title:"Change PIN",changepin_info:"Enter your new 4-digit PIN.",
-    pin_title:"Your access PIN",pin_hint:"Enter your 4 digits",pin_err:"Wrong PIN. Try again.",
-    gps_search:"Finding GPS...",gps_ok:"Within site zone",gps_bad:"Outside zone",
-    geo_in:"YOU ARE WITHIN THE SITE ZONE",geo_out:"YOU ARE OUTSIDE THE ZONE",geo_unk:"Finding GPS signal...",
-    geo_dist:"Distance:",geo_rad:"Radius: 150m",
-    checkin:"CLOCK\nIN",checkout:"CLOCK\nOUT",
-    tasks:"MY TASKS",no_tasks:"No tasks assigned today.",
-    wa_share:"Share app on WhatsApp",
-    change_pin:"🔐 Change PIN",logout:"↩ Log out",
-    toast_in:"✅ Clock-in registered",toast_out:"🔴 Clock-out registered",
-    toast_pin:"✅ PIN saved",toast_wa:"✅ Opening WhatsApp...",
-    continue:"Continue →",next:"Next →",back:"← Back"
-  }
-};
-
-// ─────────────────────────────────────
-// FIREBASE CONFIG
-// ─────────────────────────────────────
+// ── FIREBASE ──
 const FB_URL = 'https://lance-a99b4-default-rtdb.europe-west1.firebasedatabase.app';
 
-function fbSave(path, data){
-  return fetch(`${FB_URL}/${path}.json`, {
-    method: 'PUT',
-    headers: {'Content-Type':'application/json'},
-    body: JSON.stringify(data)
-  }).catch(e=>console.log('Firebase error:',e));
-}
-
-function fbGet(path){
-  return fetch(`${FB_URL}/${path}.json`)
-    .then(r=>r.json())
-    .catch(e=>null);
-}
-
-// ─────────────────────────────────────
-// STATE
-// ─────────────────────────────────────
+// ── STATE ──
 let lang = 'es';
-let workerName = '';
-let workerDoc  = '';
+let workerName = '';   // Solo para mostrar en pantalla
+let workerDoc  = '';   // DNI/NIE — CLAVE PRINCIPAL de comunicación
 let workerObra = '';
 let workerPin  = '';
 let myPin = '';
@@ -779,76 +341,84 @@ let setPinVal = '';
 let pinVal = '';
 let isIn = false;
 let entryTime = localStorage.getItem('lance_entry_time') || null;
-let gpsWatch = null;
 let myLat = null, myLng = null;
+let myCity = '', myProvince = '', myCountry = '';
+let myAccuracy = null;
 let changingPin = false;
 
 const OBRA_LAT = 41.6176, OBRA_LNG = 0.6200, RADIUS = 150;
-const APP_URL = window.location.href;
+
+// ── TRADUCCIONES ──
+const TX = {
+  es:{lang_select:"Elige tu idioma",name_title:"Identifícate",name_hint:"Introduce tu DNI o NIE.",name_lbl:"DNI o NIE",setpin_title:"Crea tu PIN",setpin_info:"Elige 4 dígitos fáciles de recordar.",changepin_title:"Cambiar PIN",changepin_info:"Introduce tu nuevo PIN.",pin_title:"Tu PIN de acceso",pin_hint:"Introduce tus 4 dígitos",pin_err:"PIN incorrecto.",gps_search:"Buscando GPS...",geo_in:"ESTÁS EN ZONA DE OBRA",geo_out:"ESTÁS FUERA DE LA ZONA",geo_unk:"Buscando señal GPS...",checkin:"FICHAR\nENTRADA",checkout:"FICHAR\nSALIDA",tasks:"MIS TAREAS",no_tasks:"Sin tareas hoy.",wa_share:"Compartir app por WhatsApp",change_pin:"🔐 Cambiar PIN",logout:"↩ Cerrar sesión",toast_in:"✅ Entrada registrada",toast_out:"🔴 Salida registrada",toast_pin:"✅ PIN guardado",continue:"Continuar →",back:"← Volver"},
+  ca:{lang_select:"Tria el teu idioma",name_title:"Identifica't",name_hint:"Introdueix el teu DNI o NIE.",name_lbl:"DNI o NIE",setpin_title:"Crea el teu PIN",setpin_info:"Tria 4 dígits fàcils de recordar.",changepin_title:"Canviar PIN",changepin_info:"Introdueix el nou PIN.",pin_title:"El teu PIN d'accés",pin_hint:"Introdueix els 4 dígits",pin_err:"PIN incorrecte.",gps_search:"Cercant GPS...",geo_in:"ESTÀS EN ZONA D'OBRA",geo_out:"ESTÀS FORA DE LA ZONA",geo_unk:"Cercant GPS...",checkin:"FITXAR\nENTRADA",checkout:"FITXAR\nSORTIDA",tasks:"LES MEVES TASQUES",no_tasks:"Sense tasques avui.",wa_share:"Compartir app per WhatsApp",change_pin:"🔐 Canviar PIN",logout:"↩ Tancar sessió",toast_in:"✅ Entrada registrada",toast_out:"🔴 Sortida registrada",toast_pin:"✅ PIN desat",continue:"Continuar →",back:"← Tornar"},
+  ro:{lang_select:"Alege limba",name_title:"Identifică-te",name_hint:"Introdu CNP sau ID.",name_lbl:"CNP / ID",setpin_title:"Creează PIN",setpin_info:"Alege 4 cifre.",changepin_title:"Schimbă PIN",changepin_info:"PIN nou de 4 cifre.",pin_title:"PIN de acces",pin_hint:"4 cifre",pin_err:"PIN incorect.",gps_search:"Căutare GPS...",geo_in:"EȘTI ÎN ZONĂ",geo_out:"EȘTI ÎN AFARA ZONEI",geo_unk:"GPS...",checkin:"INTRARE",checkout:"IEȘIRE",tasks:"SARCINILE MELE",no_tasks:"Nicio sarcină.",wa_share:"Trimite app pe WhatsApp",change_pin:"🔐 Schimbă PIN",logout:"↩ Deconectare",toast_in:"✅ Intrare",toast_out:"🔴 Ieșire",toast_pin:"✅ PIN salvat",continue:"Continuare →",back:"← Înapoi"},
+  ar:{lang_select:"اختر لغتك",name_title:"تعريف الهوية",name_hint:"أدخل رقم هويتك.",name_lbl:"رقم الهوية",setpin_title:"إنشاء PIN",setpin_info:"اختر 4 أرقام.",changepin_title:"تغيير PIN",changepin_info:"PIN جديد من 4 أرقام.",pin_title:"رمز PIN",pin_hint:"4 أرقام",pin_err:"PIN خاطئ.",gps_search:"بحث GPS...",geo_in:"أنت في الموقع",geo_out:"أنت خارج الموقع",geo_unk:"بحث GPS...",checkin:"تسجيل\nالدخول",checkout:"تسجيل\nالخروج",tasks:"مهامي",no_tasks:"لا توجد مهام.",wa_share:"مشاركة عبر واتساب",change_pin:"🔐 تغيير PIN",logout:"↩ خروج",toast_in:"✅ دخول",toast_out:"🔴 خروج",toast_pin:"✅ PIN محفوظ",continue:"متابعة →",back:"→ رجوع"},
+  fr:{lang_select:"Choisis ta langue",name_title:"Identifie-toi",name_hint:"Entre ton DNI ou NIE.",name_lbl:"DNI ou NIE",setpin_title:"Crée ton PIN",setpin_info:"4 chiffres faciles.",changepin_title:"Changer PIN",changepin_info:"Nouveau PIN 4 chiffres.",pin_title:"Ton code PIN",pin_hint:"4 chiffres",pin_err:"PIN incorrect.",gps_search:"Recherche GPS...",geo_in:"TU ES DANS LA ZONE",geo_out:"TU ES HORS ZONE",geo_unk:"GPS...",checkin:"POINTER\nENTRÉE",checkout:"POINTER\nSORTIE",tasks:"MES TÂCHES",no_tasks:"Aucune tâche.",wa_share:"Partager l'app",change_pin:"🔐 Changer PIN",logout:"↩ Déconnexion",toast_in:"✅ Entrée",toast_out:"🔴 Sortie",toast_pin:"✅ PIN sauvé",continue:"Continuer →",back:"← Retour"},
+  en:{lang_select:"Choose language",name_title:"Identify yourself",name_hint:"Enter your ID number.",name_lbl:"ID Number",setpin_title:"Create PIN",setpin_info:"Choose 4 digits.",changepin_title:"Change PIN",changepin_info:"New 4-digit PIN.",pin_title:"Your access PIN",pin_hint:"4 digits",pin_err:"Wrong PIN.",gps_search:"Finding GPS...",geo_in:"YOU ARE IN THE ZONE",geo_out:"YOU ARE OUTSIDE ZONE",geo_unk:"GPS...",checkin:"CLOCK\nIN",checkout:"CLOCK\nOUT",tasks:"MY TASKS",no_tasks:"No tasks today.",wa_share:"Share app on WhatsApp",change_pin:"🔐 Change PIN",logout:"↩ Log out",toast_in:"✅ Clocked in",toast_out:"🔴 Clocked out",toast_pin:"✅ PIN saved",continue:"Continue →",back:"← Back"}
+};
 
 function t(k){ return (TX[lang]&&TX[lang][k])||TX.es[k]||k; }
 
-// ─────────────────────────────────────
-// LANGUAGE
-// ─────────────────────────────────────
-function selLang(l, el){
+// ── IDIOMA ──
+function selLang(l,el){
   lang=l;
   document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('sel'));
   el.classList.add('sel');
-  document.body.style.direction = l==='ar'?'rtl':'ltr';
-  document.getElementById('lt').textContent = t('lang_select');
+  document.body.style.direction=l==='ar'?'rtl':'ltr';
+  document.getElementById('lt').textContent=t('lang_select');
 }
 function switchLang(l){
   lang=l;
   document.querySelectorAll('.ls-btn').forEach(b=>b.classList.remove('active'));
   document.querySelector(`[data-lang="${l}"]`).classList.add('active');
-  document.body.style.direction = l==='ar'?'rtl':'ltr';
+  document.body.style.direction=l==='ar'?'rtl':'ltr';
   applyAppLang();
 }
 function applyAppLang(){
   const s=id=>document.getElementById(id);
-  if(s('tasks-lbl'))    s('tasks-lbl').textContent    = t('tasks');
-  if(s('logout-btn'))   s('logout-btn').textContent   = t('logout');
-  if(s('change-pin-btn')) s('change-pin-btn').textContent = t('change_pin');
-  if(s('wa-share-txt')) s('wa-share-txt').textContent = t('wa_share');
-  if(s('gps-txt'))      s('gps-txt').textContent      = t('gps_search');
-  if(!isIn && s('cb-label')) s('cb-label').innerHTML  = t('checkin').replace('\n','<br>');
-  if(isIn  && s('cb-label')) s('cb-label').innerHTML  = t('checkout').replace('\n','<br>');
-  updateGeoUI();
+  if(s('tasks-lbl')) s('tasks-lbl').textContent=t('tasks');
+  if(s('logout-btn')) s('logout-btn').textContent=t('logout');
+  if(s('change-pin-btn')) s('change-pin-btn').textContent=t('change_pin');
+  if(s('wa-share-txt')) s('wa-share-txt').textContent=t('wa_share');
+  if(s('gps-txt')) s('gps-txt').textContent=t('gps_search');
+  if(!isIn&&s('cb-label')) s('cb-label').innerHTML=t('checkin').replace('\n','<br>');
+  if(isIn&&s('cb-label')) s('cb-label').innerHTML=t('checkout').replace('\n','<br>');
   renderTasks();
 }
 
-// ─────────────────────────────────────
-// SCREEN NAVIGATION
-// ─────────────────────────────────────
+// ── NAVEGACIÓN ──
 function goTo(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.add('hidden'));
   document.getElementById(id).classList.remove('hidden');
 }
 
+// ── VERIFICAR DNI/NIE ──
 function verifyDoc(){
-  const doc = (document.getElementById('worker-doc-input')?.value||'').trim().toUpperCase();
-  const msg = document.getElementById('verify-msg');
-  if(!doc || doc.length < 8){ if(msg) msg.textContent='Introduce tu DNI o NIE completo'; return; }
+  const raw=(document.getElementById('worker-doc-input')?.value||'').trim().toUpperCase();
+  const msg=document.getElementById('verify-msg');
+  if(!raw||raw.length<8){ if(msg) msg.textContent='Introduce tu DNI o NIE completo'; return; }
   if(msg) msg.textContent='🔄 Verificando...';
-  const key = doc.replace(/[^A-Z0-9]/g,'');
+  // Clave Firebase = DNI/NIE limpio (solo letras y números)
+  const key=raw.replace(/[^A-Z0-9]/g,'');
   fetch(`${FB_URL}/operarios_registro/${key}.json`)
     .then(r=>r.json())
     .then(data=>{
-      if(!data || !data.nombre){
+      if(!data||!data.nombre){
         if(msg) msg.textContent='❌ DNI/NIE no registrado. Contacta con el encargado.';
         return;
       }
-      workerName = `${data.nombre} ${data.apellidos}`;
-      workerDoc  = doc;
+      // ✅ Guardar DNI/NIE como identificador principal
+      workerDoc  = key;  // Clave limpia: ej. "40857620Y"
+      workerName = data.nombre + (data.apellidos ? ' '+data.apellidos : '');
       workerPin  = data.pin;
       workerObra = data.obra||'';
       if(msg) msg.textContent='';
       showToast(`✅ Identificado: ${data.nombre}`,'ok');
 
-      const savedPin = localStorage.getItem('pin_'+key);
+      const savedPin=localStorage.getItem('pin_'+key);
       if(savedPin){
-        myPin = savedPin;
+        myPin=savedPin;
         setupLoginPin();
         goTo('s-pin');
       } else {
@@ -857,62 +427,47 @@ function verifyDoc(){
       }
     })
     .catch(()=>{
-      if(msg) msg.textContent='⚠️ Sin conexión — no se puede verificar identidad.';
+      if(msg) msg.textContent='⚠️ Sin conexión — no se puede verificar.';
     });
 }
 
 function setupVerifyCompanyPin(){
   pinVal='';
   for(let i=0;i<4;i++) document.getElementById('pd'+i).classList.remove('on');
-  document.getElementById('pin-title').textContent = '🔐 PIN de empresa';
-  document.getElementById('pin-hint').textContent  = 'Introduce el PIN que te ha dado el encargado';
-  document.getElementById('pin-err').textContent   = '';
-  window._verifyingCompanyPin = true;
+  document.getElementById('pin-title').textContent='🔐 PIN de empresa';
+  document.getElementById('pin-hint').textContent='Introduce el PIN que te ha dado el encargado';
+  document.getElementById('pin-err').textContent='';
+  window._verifyingCompanyPin=true;
 }
 
-// ─────────────────────────────────────
-// SET PIN (create / change)
-// ─────────────────────────────────────
+// ── SET PIN ──
 function resetSetPin(isChange){
-  changingPin = isChange;
-  setPinVal = '';
-  updateSetDots();
-  if(isChange){
-    document.getElementById('setpin-title').textContent = t('changepin_title');
-    document.getElementById('setpin-info').textContent  = t('changepin_info');
-  } else {
-    document.getElementById('setpin-title').textContent = t('setpin_title');
-    document.getElementById('setpin-info').textContent  = t('setpin_info').replace('\n',' ');
-  }
+  changingPin=isChange; setPinVal=''; updateSetDots();
+  document.getElementById('setpin-title').textContent=isChange?t('changepin_title'):t('setpin_title');
+  document.getElementById('setpin-info').textContent=isChange?t('changepin_info'):t('setpin_info');
 }
 function spp(d){
   if(setPinVal.length>=4) return;
   setPinVal+=d; updateSetDots();
   if(setPinVal.length===4){
     setTimeout(()=>{
-      myPin = setPinVal;
-      const key = workerDoc.replace(/[^A-Z0-9]/g,'');
-      if(key) localStorage.setItem('pin_'+key, myPin);
+      myPin=setPinVal;
+      localStorage.setItem('pin_'+workerDoc, myPin);
       showToast(t('toast_pin'),'ok');
-      if(changingPin){ goTo('s-app'); }
-      else { setupLoginPin(); goTo('s-pin'); }
+      if(changingPin){ goTo('s-app'); } else { setupLoginPin(); goTo('s-pin'); }
     },180);
   }
 }
 function sppDel(){ setPinVal=setPinVal.slice(0,-1); updateSetDots(); }
-function updateSetDots(){
-  for(let i=0;i<4;i++) document.getElementById('sp'+i).classList.toggle('on',i<setPinVal.length);
-}
+function updateSetDots(){ for(let i=0;i<4;i++) document.getElementById('sp'+i).classList.toggle('on',i<setPinVal.length); }
 
-// ─────────────────────────────────────
-// LOGIN PIN
-// ─────────────────────────────────────
+// ── LOGIN PIN ──
 function setupLoginPin(){
   pinVal='';
   for(let i=0;i<4;i++) document.getElementById('pd'+i).classList.remove('on');
-  document.getElementById('pin-title').textContent = t('pin_title');
-  document.getElementById('pin-hint').textContent  = t('pin_hint');
-  document.getElementById('pin-err').textContent   = '';
+  document.getElementById('pin-title').textContent=t('pin_title');
+  document.getElementById('pin-hint').textContent=t('pin_hint');
+  document.getElementById('pin-err').textContent='';
 }
 function pk(d){
   if(pinVal.length>=4) return;
@@ -926,45 +481,35 @@ function pkDel(){
   document.getElementById('pin-err').textContent='';
 }
 function checkPin(){
-  const key = workerDoc.replace(/[^A-Z0-9]/g,'');
-
   if(window._verifyingCompanyPin){
-    if(pinVal === workerPin){
-      window._verifyingCompanyPin = false;
+    if(pinVal===workerPin){
+      window._verifyingCompanyPin=false;
       showToast('✅ PIN correcto — crea tu PIN personal','ok');
-      changingPin = false;
+      changingPin=false;
       resetSetPin(false);
-      document.getElementById('setpin-title').textContent = t('setpin_title');
-      document.getElementById('setpin-info').textContent = 'Crea tu PIN personal de 4 dígitos fácil de recordar';
       goTo('s-setpin');
     } else {
-      document.getElementById('pin-err').textContent = '❌ PIN incorrecto. Contacta con el encargado.';
+      document.getElementById('pin-err').textContent='❌ PIN incorrecto. Contacta con el encargado.';
       document.getElementById('login-pad').classList.add('shake');
       setTimeout(()=>document.getElementById('login-pad').classList.remove('shake'),450);
-      pinVal='';
-      for(let i=0;i<4;i++) document.getElementById('pd'+i).classList.remove('on');
+      pinVal=''; for(let i=0;i<4;i++) document.getElementById('pd'+i).classList.remove('on');
     }
   } else {
-    if(pinVal === myPin){
-      document.getElementById('worker-badge').textContent = '👷 '+workerName;
-      goTo('s-app');
-      applyAppLang();
-      renderTasks();
-      startClock();
-      startGPS();
+    if(pinVal===myPin){
+      // Mostrar solo nombre (sin apellidos completos) en la badge
+      const displayName = workerName.split(' ').slice(0,2).join(' ');
+      document.getElementById('worker-badge').textContent='👷 '+displayName;
+      goTo('s-app'); applyAppLang(); renderTasks(); startClock(); startGPS();
     } else {
-      document.getElementById('pin-err').textContent = t('pin_err');
+      document.getElementById('pin-err').textContent=t('pin_err');
       document.getElementById('login-pad').classList.add('shake');
       setTimeout(()=>document.getElementById('login-pad').classList.remove('shake'),450);
-      pinVal='';
-      for(let i=0;i<4;i++) document.getElementById('pd'+i).classList.remove('on');
+      pinVal=''; for(let i=0;i<4;i++) document.getElementById('pd'+i).classList.remove('on');
     }
   }
 }
 
-// ─────────────────────────────────────
-// CLOCK
-// ─────────────────────────────────────
+// ── RELOJ ──
 function startClock(){ tick(); setInterval(tick,1000); }
 function tick(){
   const n=new Date();
@@ -977,78 +522,56 @@ function tick(){
   }
 }
 
-// ─────────────────────────────────────
-// GPS
-// ─────────────────────────────────────
-let myCity='', myProvince='', myCountry='';
-let myAccuracy=null;
-
-function haversine(lat1,lon1,lat2,lon2){
-  const R=6371000,dLat=(lat2-lat1)*Math.PI/180,dLon=(lon2-lon1)*Math.PI/180;
-  const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
-  return Math.round(R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)));
-}
-
-window.addEventListener('online',  ()=>{ document.getElementById('offline-banner').style.display='none'; syncOfflineFichajes(); });
-window.addEventListener('offline', ()=>{ document.getElementById('offline-banner').style.display='flex'; });
+// ── GPS ──
+window.addEventListener('online',()=>{ document.getElementById('offline-banner').style.display='none'; });
+window.addEventListener('offline',()=>{ document.getElementById('offline-banner').style.display='flex'; });
 
 function startGPS(){
-  setGpsBar('loading', t('gps_search'));
-  if(!navigator.geolocation){
-    setGpsBar('bad','GPS no disponible');
-    return;
-  }
+  setGpsBar('loading',t('gps_search'));
+  if(!navigator.geolocation){ setGpsBar('bad','GPS no disponible'); return; }
   navigator.geolocation.getCurrentPosition(
     pos=>{
-      myLat=pos.coords.latitude;
-      myLng=pos.coords.longitude;
+      myLat=pos.coords.latitude; myLng=pos.coords.longitude;
       myAccuracy=Math.round(pos.coords.accuracy);
       const prec=document.getElementById('gps-precision');
       if(prec) prec.textContent=`Precisión GPS: ±${myAccuracy}m`;
-      showObraInfo();
       fetch(`https://nominatim.openstreetmap.org/reverse?lat=${myLat}&lon=${myLng}&format=json&accept-language=es`)
         .then(r=>r.json())
         .then(data=>{
           const a=data.address||{};
-          myCity     = a.city||a.town||a.village||a.municipality||a.hamlet||'';
-          myProvince = a.state||a.province||a.county||'';
-          myCountry  = a.country||'';
+          myCity=a.city||a.town||a.village||a.municipality||a.hamlet||'';
+          myProvince=a.state||a.province||a.county||'';
+          myCountry=a.country||'';
           updateGeoUI();
+          loadObraInfo();
         })
-        .catch(()=>{ myCity='Ubicación detectada'; updateGeoUI(); });
+        .catch(()=>{ myCity='Ubicación detectada'; updateGeoUI(); loadObraInfo(); });
     },
-    err=>{
-      setGpsBar('bad','⚠️ Activa el GPS del móvil');
-      const ind=document.getElementById('geo-ind');
-      if(ind) ind.className='geo-ind bad';
-      document.getElementById('geo-big').textContent='📵';
-      document.getElementById('geo-label').textContent='GPS desactivado';
-      document.getElementById('geo-dist').textContent='Ve a Ajustes → Privacidad → Ubicación → Activar';
-    },
-    {enableHighAccuracy:true, timeout:15000, maximumAge:0}
+    err=>{ setGpsBar('bad','⚠️ Activa el GPS del móvil'); },
+    {enableHighAccuracy:true,timeout:15000,maximumAge:0}
   );
 }
 
-function showObraInfo(){
-  const key = workerName.replace(/\s+/g,'_').toLowerCase();
-  fetch(`${FB_URL}/operarios_activos/${key}.json`)
+// ✅ CLAVE: buscar obra por DNI/NIE, no por nombre
+function loadObraInfo(){
+  fetch(`${FB_URL}/operarios_activos/${workerDoc}.json`)
     .then(r=>r.json())
     .then(data=>{
-      const obraCard = document.getElementById('obra-card');
-      const obraNombre = document.getElementById('obra-nombre');
-      const obraDistancia = document.getElementById('obra-distancia');
-      if(obraCard && data && data.obra){
-        obraNombre.textContent = data.obra;
-        obraCard.style.display = 'block';
-        if(obraDistancia) obraDistancia.textContent = `📍 ${myCity||myProvince||'Ubicación detectada'} · Precisión ±${myAccuracy||'?'}m`;
+      const obraCard=document.getElementById('obra-card');
+      const obraNombre=document.getElementById('obra-nombre');
+      const obraDistancia=document.getElementById('obra-distancia');
+      if(obraCard){
+        obraNombre.textContent=workerObra||data?.obra||'Obra asignada';
+        obraDistancia.textContent=`📍 ${myCity||myProvince||'Ubicación detectada'} · ±${myAccuracy||'?'}m`;
+        obraCard.style.display='block';
       }
     })
     .catch(()=>{
-      const obraCard = document.getElementById('obra-card');
-      if(obraCard && workerName){
-        document.getElementById('obra-nombre').textContent = 'Obra asignada';
-        document.getElementById('obra-distancia').textContent = `📍 ${myCity||'Ubicación detectada'} · ±${myAccuracy||'?'}m`;
-        obraCard.style.display = 'block';
+      const obraCard=document.getElementById('obra-card');
+      if(obraCard){
+        document.getElementById('obra-nombre').textContent=workerObra||'Obra asignada';
+        document.getElementById('obra-distancia').textContent=`📍 ${myCity||'Ubicación detectada'} · ±${myAccuracy||'?'}m`;
+        obraCard.style.display='block';
       }
     });
 }
@@ -1062,50 +585,27 @@ function updateGeoUI(){
   document.getElementById('geo-label').textContent=t('geo_in');
   document.getElementById('geo-dist').textContent=`📍 ${locationStr}`;
   setGpsBar('ok',`GPS activo · ${myCity||myProvince||'Ubicación detectada'}`);
-  const obraDistEl = document.getElementById('obra-distancia');
-  if(obraDistEl && myAccuracy) obraDistEl.textContent=`📍 ${locationStr} · Precisión ±${myAccuracy}m`;
+  const obraDistEl=document.getElementById('obra-distancia');
+  if(obraDistEl&&myAccuracy) obraDistEl.textContent=`📍 ${locationStr} · Precisión ±${myAccuracy}m`;
 }
 
 function setGpsBar(cls,txt){
-  const b=document.getElementById('gps-bar');
-  const tx=document.getElementById('gps-txt');
-  if(b) b.className='gps-bar '+cls;
-  if(tx) tx.textContent=txt;
+  const b=document.getElementById('gps-bar'); const tx=document.getElementById('gps-txt');
+  if(b) b.className='gps-bar '+cls; if(tx) tx.textContent=txt;
 }
 
-function saveOfflineFichaje(data){
-  try{
-    const pending = JSON.parse(localStorage.getItem('lance_offline_fichajes')||'[]');
-    pending.push(data);
-    localStorage.setItem('lance_offline_fichajes', JSON.stringify(pending));
-  }catch(e){}
-}
-
-function syncOfflineFichajes(){
-  try{
-    const pending = JSON.parse(localStorage.getItem('lance_offline_fichajes')||'[]');
-    if(!pending.length) return;
-    pending.forEach(data=>{
-      const key = data.nombre.replace(/\s+/g,'_').toLowerCase();
-      fetch(`${FB_URL}/fichajes/${data.fecha}/${key}.json`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).catch(()=>{});
-    });
-    localStorage.removeItem('lance_offline_fichajes');
-    showToast('✅ Fichajes offline sincronizados','ok');
-  }catch(e){}
-}
-
-// ─────────────────────────────────────
-// CHECKIN
-// ─────────────────────────────────────
+// ── FICHAJE ──
+// ✅ CLAVE: usa workerDoc (DNI/NIE) como clave Firebase — no el nombre
 function fbSaveCheckin(type){
-  const now = new Date();
-  const dateStr = now.toISOString().split('T')[0];
-  const timeStr = now.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
-  const data = {
-    nombre: workerName,
+  const now=new Date();
+  const dateStr=now.toISOString().split('T')[0];
+  const timeStr=now.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
+  const data={
+    nombre: workerName,           // Solo para mostrar en oficina
+    doc: workerDoc,               // ✅ DNI/NIE — clave de identificación
     tipo: type,
     hora: timeStr,
-    hora_entrada: type==='entrada' ? timeStr : (entryTime||null),
+    hora_entrada: type==='entrada'?timeStr:(entryTime||null),
     fecha: dateStr,
     ciudad: myCity||'',
     provincia: myProvince||'',
@@ -1116,16 +616,19 @@ function fbSaveCheckin(type){
   };
   if(type==='entrada'){ entryTime=timeStr; localStorage.setItem('lance_entry_time',timeStr); }
   if(type==='salida'){ entryTime=null; localStorage.removeItem('lance_entry_time'); }
-  const key = workerName.replace(/\s+/g,'_').toLowerCase();
-  fetch(`${FB_URL}/fichajes/${dateStr}/${key}.json`, {
-    method: 'PUT',
-    headers: {'Content-Type':'application/json'},
-    body: JSON.stringify(data)
+
+  // ✅ Clave = DNI/NIE limpio — ej: "40857620Y"
+  const key = workerDoc;
+
+  // Guardar fichaje histórico
+  fetch(`${FB_URL}/fichajes/${dateStr}/${key}.json`,{
+    method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)
   }).catch(e=>console.log('Firebase error:',e));
-  fetch(`${FB_URL}/operarios_activos/${key}.json`, {
-    method: 'PUT',
-    headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({...data, activo: type==='entrada'})
+
+  // ✅ Guardar en operarios_activos con clave DNI/NIE
+  fetch(`${FB_URL}/operarios_activos/${key}.json`,{
+    method:'PUT',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({...data, activo: type==='entrada'})
   }).catch(e=>console.log('Firebase error:',e));
 }
 
@@ -1134,142 +637,75 @@ function toggleCheckin(){
   const btn=document.getElementById('checkin-btn');
   const lbl=document.getElementById('cb-label');
   const ico=document.getElementById('cb-icon');
-  const st =document.getElementById('checkin-status');
+  const st=document.getElementById('checkin-status');
   const now=new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
   const loc=myCity||myProvince||'GPS activo';
-  const tipo = isIn ? 'entrada' : 'salida';
-
+  const tipo=isIn?'entrada':'salida';
   if(isIn){
-    btn.classList.add('in');
-    btn.style.borderColor='var(--red)';
-    btn.style.background='rgba(255,71,87,.07)';
-    lbl.innerHTML=t('checkout').replace('\n','<br>');
-    ico.textContent='🔴';
+    btn.classList.add('in'); btn.style.borderColor='var(--red)'; btn.style.background='rgba(255,71,87,.07)';
+    lbl.innerHTML=t('checkout').replace('\n','<br>'); ico.textContent='🔴';
     st.innerHTML=`✅ Entrada: ${now}<br><span style="color:var(--green);font-size:10px">📍 ${loc} · ±${myAccuracy||'?'}m</span>`;
     showToast(t('toast_in'),'ok');
   } else {
-    btn.classList.remove('in');
-    btn.style.borderColor='var(--green)';
-    btn.style.background='rgba(56,224,123,.07)';
-    lbl.innerHTML=t('checkin').replace('\n','<br>');
-    ico.textContent='📍';
+    btn.classList.remove('in'); btn.style.borderColor='var(--green)'; btn.style.background='rgba(56,224,123,.07)';
+    lbl.innerHTML=t('checkin').replace('\n','<br>'); ico.textContent='📍';
     st.innerHTML=`🔴 Salida: ${now}<br><span style="color:var(--red);font-size:10px">📍 ${loc}</span>`;
     showToast(t('toast_out'),'err');
   }
-
   const uf=document.getElementById('ultimo-fichaje');
   const uft=document.getElementById('ultimo-fichaje-txt');
-  if(uf&&uft){
-    uf.style.display='block';
-    uft.textContent=`${tipo==='entrada'?'✅ Entrada':'🔴 Salida'} · ${now} · ${loc}`;
-  }
-
-  if(navigator.onLine){
-    fbSaveCheckin(tipo);
-  } else {
-    saveOfflineFichaje({
-      nombre:workerName, tipo, hora:now,
-      fecha:new Date().toISOString().split('T')[0],
-      ciudad:myCity||'', provincia:myProvince||'',
-      precision:myAccuracy||0, lat:myLat||0, lng:myLng||0,
-      timestamp:Date.now()
-    });
-    showToast('📵 Sin internet — guardado localmente','inf');
-  }
-
+  if(uf&&uft){ uf.style.display='block'; uft.textContent=`${tipo==='entrada'?'✅ Entrada':'🔴 Salida'} · ${now} · ${loc}`; }
+  if(navigator.onLine){ fbSaveCheckin(tipo); }
+  else { showToast('📵 Sin internet — guardado localmente','inf'); }
   if(navigator.vibrate) navigator.vibrate([60,30,60]);
 }
 
-// ─────────────────────────────────────
-// TASKS — LEE DESDE FIREBASE ✅
-// ─────────────────────────────────────
+// ── TAREAS ──
 function renderTasks(){
-  const list = document.getElementById('task-list');
-  if(!list) return;
-  list.innerHTML = '<div class="no-task">⏳ Cargando tareas...</div>';
-
-  const colors = {urgent:'var(--red)', normal:'var(--amber)', info:'var(--blue2)'};
-
+  const list=document.getElementById('task-list'); if(!list) return;
+  list.innerHTML='<div class="no-task">⏳ Cargando tareas...</div>';
+  const colors={urgent:'var(--red)',normal:'var(--amber)',info:'var(--blue2)'};
   fetch(`${FB_URL}/tareas.json`)
-    .then(r => r.json())
-    .then(data => {
-      if(!data){
-        list.innerHTML = `<div class="no-task">${t('no_tasks')}</div>`;
-        return;
-      }
-
-      const tareas = Object.values(data).filter(tk => {
-        if(!tk || !tk.to) return false;
-        // Mostrar si va dirigida a este operario O a todos
-        const dest = tk.to.toLowerCase().trim();
-        const nombre = workerName.toLowerCase().trim();
-        return dest === nombre
-            || dest === 'todos los operarios'
-            || dest === nombre.split(' ')[0];
+    .then(r=>r.json())
+    .then(data=>{
+      if(!data){ list.innerHTML=`<div class="no-task">${t('no_tasks')}</div>`; return; }
+      // Filtrar tareas por DNI o nombre
+      const tareas=Object.values(data).filter(tk=>{
+        if(!tk||!tk.to) return false;
+        const dest=tk.to.toLowerCase().trim();
+        const docLower=workerDoc.toLowerCase();
+        const nameLower=workerName.toLowerCase();
+        return dest==='todos los operarios'||dest.includes(docLower)||dest.includes(nameLower.split(' ')[0]);
       });
-
-      if(!tareas.length){
-        list.innerHTML = `<div class="no-task">${t('no_tasks')}</div>`;
-        return;
-      }
-
-      // Más recientes primero
-      tareas.sort((a,b) => (b.timestamp||0) - (a.timestamp||0));
-
-      list.innerHTML = tareas.map(tk => {
-        const prioRaw = (tk.prioridad||'').toLowerCase();
-        const prio = prioRaw.includes('urgent') || prioRaw.includes('alta') || prioRaw.includes('🔴')
-          ? 'urgent' : prioRaw.includes('info') || prioRaw.includes('baja') || prioRaw.includes('🔵')
-          ? 'info' : 'normal';
-        return `<div class="task-card ${prio}">
-          <div class="task-dot" style="background:${colors[prio]}"></div>
-          <div>
-            <div class="task-text">${tk.msg || tk.texto || 'Sin descripción'}</div>
-            <div class="task-time">📩 ${tk.time||tk.hora||''} · ${tk.fecha||''}</div>
-          </div>
-        </div>`;
+      if(!tareas.length){ list.innerHTML=`<div class="no-task">${t('no_tasks')}</div>`; return; }
+      tareas.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
+      list.innerHTML=tareas.map(tk=>{
+        const prioRaw=(tk.prioridad||'').toLowerCase();
+        const prio=prioRaw.includes('urgent')||prioRaw.includes('alta')||prioRaw.includes('🔴')?'urgent':prioRaw.includes('info')||prioRaw.includes('baja')||prioRaw.includes('🔵')?'info':'normal';
+        return`<div class="task-card ${prio}"><div class="task-dot" style="background:${colors[prio]}"></div><div><div class="task-text">${tk.msg||tk.texto||'Sin descripción'}</div><div class="task-time">📩 ${tk.time||tk.hora||''} · ${tk.fecha||''}</div></div></div>`;
       }).join('');
     })
-    .catch(()=>{
-      list.innerHTML = '<div class="no-task">⚠️ Sin conexión — no se pueden cargar tareas.</div>';
-    });
+    .catch(()=>{ list.innerHTML=`<div class="no-task">⚠️ Sin conexión.</div>`; });
 }
 
-// ─────────────────────────────────────
-// WHATSAPP SHARE
-// ─────────────────────────────────────
+// ── WHATSAPP ──
 function shareWA(){
-  const url = window.location.href;
-  const msg = encodeURIComponent(
-    `🏗️ *CONSTRUCCIONES LANCE 2024 SL*\n\n`+
-    `Hola! Te envío el acceso a la app de fichaje *ObraControl GPS*.\n\n`+
-    `📱 Abre este enlace desde tu móvil:\n`+
-    `👉 ${url}\n\n`+
-    `📋 Pasos:\n`+
-    `1️⃣ Elige tu idioma\n`+
-    `2️⃣ Escribe tu nombre\n`+
-    `3️⃣ Crea tu PIN de 4 dígitos\n`+
-    `4️⃣ ¡Listo! Pulsa el botón grande para fichar\n\n`+
-    `⚠️ Guarda este enlace en tu móvil.\n\n`+
-    `_construcciones LANCE 2024 SL · ObraControl GPS_`
-  );
-  showToast(t('toast_wa'),'inf');
+  const url=window.location.href;
+  const msg=encodeURIComponent(`🏗️ *CONSTRUCCIONES LANCE 2024 SL*\n\nApp de fichaje ObraControl GPS:\n👉 ${url}\n\n_construcciones LANCE 2024 SL_`);
+  showToast('✅ Abriendo WhatsApp...','inf');
   setTimeout(()=>window.open(`https://wa.me/?text=${msg}`,'_blank'),400);
 }
 
-// ─────────────────────────────────────
-// LOGOUT
-// ─────────────────────────────────────
+// ── LOGOUT ──
 function logout(){
-  isIn=false; pinVal=''; workerName=''; myPin=''; setPinVal='';
+  isIn=false; pinVal=''; workerName=''; workerDoc=''; myPin=''; setPinVal='';
   myLat=null; myLng=null;
-  if(gpsWatch) navigator.geolocation.clearWatch(gpsWatch);
   document.getElementById('checkin-btn').classList.remove('in');
   document.getElementById('checkin-status').textContent='';
   goTo('s-lang');
 }
 
-// ── SPLASH SCREEN ──
+// ── SPLASH ──
 window.addEventListener('load',()=>{
   setTimeout(()=>{
     const splash=document.getElementById('s-splash');
@@ -1277,41 +713,22 @@ window.addEventListener('load',()=>{
   },2800);
 });
 
-// ─────────────────────────────────────
-// PWA INSTALL
-// ─────────────────────────────────────
+// ── PWA ──
 let deferredPrompt=null;
 window.addEventListener('beforeinstallprompt',e=>{
   e.preventDefault(); deferredPrompt=e;
-  const btn=document.getElementById('install-btn');
-  if(btn) btn.style.display='flex';
-});
-window.addEventListener('appinstalled',()=>{
-  const btn=document.getElementById('install-btn');
-  if(btn) btn.style.display='none';
-  showToast('✅ App instalada en pantalla de inicio','ok');
+  const btn=document.getElementById('install-btn'); if(btn) btn.style.display='flex';
 });
 function installApp(){
-  if(deferredPrompt){
-    deferredPrompt.prompt();
-    deferredPrompt.userChoice.then(r=>{
-      if(r.outcome==='accepted') showToast('✅ Instalando...','ok');
-      deferredPrompt=null;
-    });
-  }
+  if(deferredPrompt){ deferredPrompt.prompt(); deferredPrompt.userChoice.then(()=>{ deferredPrompt=null; }); }
 }
 function checkIOSInstall(){
   const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
   const isStandalone=window.matchMedia('(display-mode: standalone)').matches;
-  if(isIOS&&!isStandalone){
-    const el=document.getElementById('ios-install');
-    if(el) el.style.display='block';
-  }
+  if(isIOS&&!isStandalone){ const el=document.getElementById('ios-install'); if(el) el.style.display='block'; }
 }
 
-// ─────────────────────────────────────
-// TOAST
-// ─────────────────────────────────────
+// ── TOAST ──
 function showToast(msg,type='ok'){
   const el=document.getElementById('toast');
   el.textContent=msg; el.className=`toast show ${type}`;
