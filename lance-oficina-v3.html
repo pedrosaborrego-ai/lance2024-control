@@ -1146,7 +1146,7 @@ function initApp(){
     renderTaskLog(); renderWP(); updateExtraSelect();
     const sel=document.getElementById('task-to');
     sel.innerHTML='<option value="all">Todos los operarios</option>';
-    WORKERS.forEach(w=>{ sel.innerHTML+=`<option>${w.nombre} ${w.apellidos}</option>`; });
+    WORKERS.forEach(w=>{ const doc=(w.dni||w.nie||'').replace(/[^A-Z0-9]/gi,'').toUpperCase(); sel.innerHTML+=`<option value="${doc}">${w.nombre} ${w.apellidos}</option>`; });
     document.getElementById('jornada-date').textContent=new Date().toLocaleDateString('es-ES',{weekday:'long',day:'2-digit',month:'long'});
     // Iniciar conexión Firebase en tiempo real
     startFirebaseListener();
