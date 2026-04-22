@@ -848,7 +848,7 @@ function loadObraInfo(){
       const obraNombre=document.getElementById('obra-nombre');
       const obraDistancia=document.getElementById('obra-distancia');
       if(obraCard){
-        obraNombre.textContent=workerObra||data?.obra||'Obra asignada';
+        obraNombre.textContent=workerObra||data?.obra||'Obra asignada'; workerObraLat=data?.obra_lat||null; workerObraLng=data?.obra_lng||null; if(workerObra&&!workerObraLat){fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(workerObra+', España')}&format=json&limit=1`).then(r=>r.json()).then(res=>{if(res&&res[0]){workerObraLat=parseFloat(res[0].lat);workerObraLng=parseFloat(res[0].lon);checkZonaObra();}}).catch(()=>{});}
         obraDistancia.textContent=`📍 ${myCity||myProvince||'Ubicación detectada'} · ±${myAccuracy||'?'}m`;
         obraCard.style.display='block';
       }
