@@ -749,21 +749,16 @@ function sendResumenWA(){
   const fueraZona=WORKERS.filter(w=>w.en_zona===false);
   const horas=WORKERS.reduce((a,w)=>a+parseFloat(w.h||0),0).toFixed(1);
   const hoy=DAYS[new Date().getDay()];
-  const msg=encodeURIComponent(`🏗️ *OBRACONTROL GPS — RESUMEN ${hoy.toUpperCase()}*
-📅 ${new Date().toLocaleDateString('es-ES',{day:'2-digit',month:'long',year:'numeric'})}
-
-👷 Plantilla: ${WORKERS.length}
-✅ En obra: ${enObra.length}
-❌ Sin fichar: ${sinFichar.length}${sinFichar.length?'
-'+sinFichar.map(w=>`  • ${w.nombre} ${w.apellidos}`).join('
-'):''}
-⚠️ Fuera zona: ${fueraZona.length}${fueraZona.length?'
-'+fueraZona.map(w=>`  • ${w.nombre} (${Math.round(w.dist_obra||0)}m)`).join('
-'):''}
-⏱ Horas: ${horas}h
-
-_Construcciones Lance 2024 SL_`);
-  window.open(`https://wa.me/${ENCARGADO_WA}?text=${msg}`,'_blank');
+  let txt='🏗️ *OBRACONTROL GPS — RESUMEN '+hoy.toUpperCase()+'*\n';
+  txt+='📅 '+new Date().toLocaleDateString('es-ES',{day:'2-digit',month:'long',year:'numeric'})+'\n\n';
+  txt+='👷 Plantilla: '+WORKERS.length+'\n';
+  txt+='✅ En obra: '+enObra.length+'\n';
+  txt+='❌ Sin fichar: '+sinFichar.length;
+  if(sinFichar.length) txt+='\n'+sinFichar.map(w=>'  • '+w.nombre+' '+w.apellidos).join('\n');
+  txt+='\n⚠️ Fuera zona: '+fueraZona.length;
+  if(fueraZona.length) txt+='\n'+fueraZona.map(w=>'  • '+w.nombre+' ('+Math.round(w.dist_obra||0)+'m)').join('\n');
+  txt+='\n⏱ Horas: '+horas+'h\n\n_Construcciones Lance 2024 SL_';
+  window.open('https://wa.me/'+ENCARGADO_WA+'?text='+encodeURIComponent(txt),'_blank');
   showToast('📱 Enviando resumen...','ok');
 }
 
