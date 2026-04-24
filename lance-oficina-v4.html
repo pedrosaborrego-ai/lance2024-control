@@ -302,7 +302,7 @@ textarea.form-ctrl{resize:vertical;min-height:80px;}
             <button class="btn-primary" onclick="sendTask()">Enviar tarea →</button>
           </div>
         </div>
-        <div class="card"><div class="card-hdr"><div class="card-title">Tareas enviadas</div></div><div id="task-log" style="max-height:420px;overflow-y:auto;"></div></div>
+        <div class="card"><div class="card-hdr"><div class="card-title">Tareas enviadas</div><button onclick="borrarTodasTareas()" style="font-size:10px;color:var(--red);background:none;border:none;cursor:pointer;font-weight:600;">🗑️ Borrar todas</button></div><div id="task-log" style="max-height:420px;overflow-y:auto;"></div></div>
       </div>
     </div>
 
@@ -389,7 +389,10 @@ textarea.form-ctrl{resize:vertical;min-height:80px;}
       <div class="card">
         <div class="card-hdr">
           <div class="card-title">📋 Registro de consentimientos RGPD</div>
+          <div style="display:flex;gap:8px;">
           <button onclick="cargarConsentimientos()" style="font-size:10px;color:var(--blue2);background:none;border:none;cursor:pointer;font-weight:600;">🔄 Actualizar</button>
+          <button onclick="borrarTodosConsentimientos()" style="font-size:10px;color:var(--red);background:none;border:none;cursor:pointer;font-weight:600;">🗑️ Borrar todos</button>
+        </div>
         </div>
         <table class="wtbl">
           <thead><tr><th>Operario</th><th>DNI/NIE</th><th>Fecha</th><th>Hora</th><th>Idioma</th><th>RGPD</th><th>GPS</th><th>Imprimir</th></tr></thead>
@@ -621,7 +624,13 @@ function saveWorker(){
   if(pinDup){showToast('PIN '+pin+' ya asignado a '+pinDup.nombre,'err');return;}
   if(id){const w=WORKERS.find(w=>w.id==id);if(w){const pinChanged=w.pin!==pin;Object.assign(w,{nombre,apellidos,dni,nie,tel,obra,pin,status});fbSyncWorker(w,pinChanged);if(pinChanged)showToast('🔐 PIN cambiado — el operario deberá crear uno nuevo','inf');}showToast('✅ Actualizado','ok');}
   else{const ni=Math.max(0,...WORKERS.map(w=>w.id))+1;const idioma=document.getElementById('g-idioma')?.value||'es';
-        const nw={id:ni,nombre,apellidos,dni,nie,tel,obra,pin,status,idioma,arrival:null,dep:null,h:0,en_zona:null,dist_obra:null};WORKERS.push(nw);lastWorkerAdded=nw;fbSyncWorker(nw);const wp=document.getElementById('wa-preview');if(wp)wp.textContent=generarMsgWA(nw);document.getElementById('wa-generado').style.display='block';showToast('✅ '+nombre+' dado de alta','ok');animKPI('kv-total',WORKERS.length);}
+        const nw={id:ni,nombre,apellidos,dni,nie,tel,obra,pin,status,idioma,arrival:null,dep:null,h:0,en_zona:null,dist_obra:null};WORKERS.push(nw);lastWorkerAdded=nw;fbSyncWorker(nw);
+        // Guardar registro inicial de consentimiento enviado
+        const idiomaAlta=document.getElementById('g-idioma')?.value||'es';
+        const cdInicial={doc:(nw.dni||nw.nie||'').replace(/[^A-Z0-9]/gi,'').toUpperCase(),nombre:nw.nombre+' '+nw.apellidos,fecha:new Date().toISOString().split('T')[0],hora:new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'}),timestamp:Date.now(),idioma:idiomaAlta,rgpd_aceptado:false,gps_aceptado:false,estado:'pendiente_aceptacion',version:'1.0'};
+        const docKey=(nw.dni||nw.nie||'').replace(/[^A-Z0-9]/gi,'').toUpperCase();
+        if(docKey) fetch(`${FB_URL}/consentimientos/${docKey}.json`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(cdInicial)}).catch(()=>{});
+        const wp=document.getElementById('wa-preview');if(wp)wp.textContent=generarMsgWA(nw);document.getElementById('wa-generado').style.display='block';showToast('✅ '+nombre+' dado de alta','ok');animKPI('kv-total',WORKERS.length);}
   saveW();resetForm();renderGestionList();renderPinTable();renderWorkers();updateTaskSelect();
 }
 
@@ -737,11 +746,14 @@ ${w.obra||consultaTxt}
 _ObraControl GPS · Construcciones Lance 2024 SL_`;
 }
 function sendWaAlta(){
-  if(!lastWorkerAdded)return;
+  if(!lastWorkerAdded){showToast('⚠️ No hay operario para enviar','err');return;}
   const msg=encodeURIComponent(generarMsgWA(lastWorkerAdded));
   const phone=(lastWorkerAdded.tel||'').replace(/[\s\-\(\)]/g,'');
   let cp=phone.replace(/^\+/,'');if(cp&&!cp.startsWith('34'))cp='34'+cp;
-  window.open(cp?`https://wa.me/${cp}?text=${msg}`:`https://wa.me/?text=${msg}`,'_blank');
+  if(!cp){showToast('⚠️ Este operario no tiene teléfono guardado — se abrirá WhatsApp sin número','inf');}
+  const url=cp?'https://wa.me/'+cp+'?text='+msg:'https://wa.me/?text='+msg;
+  showToast('📱 Abriendo WhatsApp...','ok');
+  setTimeout(()=>window.open(url,'_blank'),400);
 }
 
 function sendWaOperario(id){
@@ -749,8 +761,10 @@ function sendWaOperario(id){
   const msg=encodeURIComponent(generarMsgWA(w));
   const phone=(w.tel||'').replace(/[\s\-\(\)]/g,'');
   let cp=phone.replace(/^\+/,'');if(cp&&!cp.startsWith('34'))cp='34'+cp;
-  window.open(cp?`https://wa.me/${cp}?text=${msg}`:`https://wa.me/?text=${msg}`,'_blank');
-  showToast('📱 Abriendo WhatsApp para '+w.nombre,'ok');
+  if(!cp){showToast('⚠️ '+w.nombre+' no tiene teléfono — se abre WA sin número','inf');}
+  else{showToast('📱 Abriendo WhatsApp para '+w.nombre,'ok');}
+  const url=cp?'https://wa.me/'+cp+'?text='+msg:'https://wa.me/?text='+msg;
+  setTimeout(()=>window.open(url,'_blank'),400);
 }
 
 // ── TAREAS ──
@@ -824,25 +838,35 @@ function sendResumenWA(){
 }
 
 // ── CONSENTIMIENTOS ──
+let _consentData=[];
 function cargarConsentimientos(){
   const tb=document.getElementById('consent-tbody');
   if(!tb)return;
   tb.innerHTML='<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--text3)">⏳ Cargando...</td></tr>';
   fetch(`${FB_URL}/consentimientos.json`).then(r=>r.json()).then(data=>{
-    if(!data){tb.innerHTML='<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--text3)">Sin consentimientos registrados aún.</td></tr>';return;}
+    if(!data||!Object.keys(data).length){
+      tb.innerHTML='<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--text3)">Sin consentimientos registrados aún.</td></tr>';
+      return;
+    }
     const flags={es:'🇪🇸',ca:'🏴',ro:'🇷🇴',ar:'🇲🇦',fr:'🇫🇷',en:'🇬🇧'};
-    tb.innerHTML=Object.values(data).sort((a,b)=>(b.timestamp||0)-(a.timestamp||0)).map(c=>`
-      <tr>
-        <td style="font-weight:600">${c.nombre||'—'}</td>
-        <td style="font-size:11px">${c.doc||'—'}</td>
-        <td>${c.fecha||'—'}</td>
-        <td>${c.hora||'—'}</td>
-        <td>${flags[c.idioma]||'🇪🇸'} ${c.idioma||'es'}</td>
-        <td><span class="pill p-in">✅ Sí</span></td>
-        <td><span class="pill p-in">✅ Sí</span></td>
-        <td><button class="btn-edit" onclick="imprimirConsentimiento('${c.doc}','${c.nombre||''}','${c.fecha||''}','${c.hora||''}','${c.idioma||'es'}')">🖨️</button></td>
-      </tr>`).join('');
+    _consentData=Object.values(data).sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
+    tb.innerHTML=_consentData.map((c,i)=>'<tr>'
+      +'<td style="font-weight:600">'+(c.nombre||'—')+'</td>'
+      +'<td style="font-size:11px">'+(c.doc||'—')+'</td>'
+      +'<td>'+(c.fecha||'—')+'</td>'
+      +'<td>'+(c.hora||'—')+'</td>'
+      +'<td>'+(flags[c.idioma]||'🇪🇸')+' '+(c.idioma||'es')+'</td>'
+      +'<td><span class="pill p-in">✅ Sí</span></td>'
+      +'<td><span class="pill p-in">✅ Sí</span></td>'
+      +'<td style="display:flex;gap:4px;"><button class="btn-edit" onclick="imprimirConsentimientoIdx('+i+')">🖨️</button><button class="btn-danger" onclick="borrarConsentimiento(\'' + (c.doc||'') + '\')">🗑️</button></td>'
+      +'</tr>').join('');
   }).catch(()=>{tb.innerHTML='<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--red)">Error al cargar.</td></tr>';});
+}
+
+function imprimirConsentimientoIdx(i){
+  const c=_consentData[i];
+  if(!c)return;
+  imprimirConsentimiento(c.doc||'',c.nombre||'',c.fecha||'',c.hora||'',c.idioma||'es');
 }
 
 function imprimirConsentimiento(doc,nombre,fecha,hora,idioma){
@@ -897,6 +921,28 @@ function imprimirConsentimiento(doc,nombre,fecha,hora,idioma){
   const w=window.open('','_blank','width=820,height=1000');
   w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Consentimiento RGPD — '+nombre+'</title><style>'+css+'</style></head><body>'+body+'</body></html>');
   w.document.close();
+}
+
+// ── BORRADO ──
+function borrarConsentimiento(doc){
+  if(!doc||!confirm('¿Eliminar consentimiento de '+doc+'?'))return;
+  fetch(`${FB_URL}/consentimientos/${doc}.json`,{method:'DELETE'})
+    .then(()=>{showToast('✅ Consentimiento eliminado','ok');cargarConsentimientos();})
+    .catch(()=>showToast('⚠️ Error al eliminar','err'));
+}
+
+function borrarTodosConsentimientos(){
+  if(!confirm('¿Eliminar TODOS los consentimientos? Esta acción no se puede deshacer.'))return;
+  fetch(`${FB_URL}/consentimientos.json`,{method:'DELETE'})
+    .then(()=>{showToast('✅ Todos los consentimientos eliminados','ok');cargarConsentimientos();})
+    .catch(()=>showToast('⚠️ Error al eliminar','err'));
+}
+
+function borrarTodasTareas(){
+  if(!confirm('¿Eliminar TODAS las tareas enviadas? Esta acción no se puede deshacer.'))return;
+  fetch(`${FB_URL}/tareas.json`,{method:'DELETE'})
+    .then(()=>{showToast('✅ Todas las tareas eliminadas','ok');renderTaskLog();})
+    .catch(()=>showToast('⚠️ Error al eliminar','err'));
 }
 
 // ── TOAST ──
