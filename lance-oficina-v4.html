@@ -275,6 +275,7 @@ textarea.form-ctrl{resize:vertical;min-height:80px;}
         <svg fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M6 6.5c0-1.1.9-2 2-2s2 .9 2 2c0 .8-.5 1.5-1.2 1.8L8 9v1"/><circle cx="8" cy="11.5" r=".5" fill="currentColor"/></svg>
         Asistente IA
       </div>
+      <div class="nav-item" onclick="showPage('consentimientos')" id="ni-consentimientos">📋 Consentimientos</div>
     </nav>
     <div class="sb-footer">
       <div class="sb-user">
@@ -1085,6 +1086,95 @@ function geocodificarObra(){
         showToast('✅ Zona geocodificada','ok');
       } else {if(btn)btn.textContent='❌';showToast('⚠️ No encontrado','err');}
     }).catch(()=>{if(btn)btn.textContent='📍 Zona';showToast('⚠️ Error','err');});
+}
+
+const RGPD_WA={
+  es:"🔒 PROTECCIÓN DE DATOS\n\nConstrucciones Lance 2024 SL recogerá tu nombre, DNI/NIE, horas de entrada/salida y ubicación GPS solo al fichar. Datos en servidores europeos (Firebase, Bélgica). Acceso/eliminación: luis@construccioneslance.com\n\n📍 GPS: La app accede a tu ubicación SOLO al fichar, nunca en segundo plano.\n\nAl usar la app aceptas estas condiciones.",
+  ca:"🔒 PROTECCIÓ DE DADES\n\nConstruccions Lance 2024 SL recollirà el teu nom, DNI/NIE, hores d'entrada/sortida i GPS només en fitxar. Servidors europeus (Firebase, Bèlgica). Accés/eliminació: luis@construccioneslance.com\n\n📍 GPS: L'app accedeix al GPS NOMÉS en fitxar.",
+  ro:"🔒 PROTECTIA DATELOR\n\nConstrucciones Lance 2024 SL va inregistra datele la pontaj. Servere europene (Firebase, Belgia). Acces: luis@construccioneslance.com\n\n📍 GPS: Aplicatia acceseaza GPS-ul DOAR la pontaj.",
+  ar:"🔒 حماية البيانات\n\nسيتم تسجيل بياناتك عند الحضور فقط. خوادم أوروبية. الوصول: luis@construccioneslance.com\n\n📍 GPS: يُستخدم فقط لحظة التسجيل.",
+  fr:"🔒 PROTECTION DES DONNÉES\n\nConstrucciones Lance 2024 SL collectera tes données au pointage. Serveurs européens. Accès: luis@construccioneslance.com\n\n📍 GPS: Utilisé UNIQUEMENT au pointage.",
+  en:"🔒 DATA PROTECTION\n\nConstrucciones Lance 2024 SL will collect your data only when clocking. European servers. Access: luis@construccioneslance.com\n\n📍 GPS: Used ONLY when clocking in."
+};
+
+function imprimirConsentimiento(doc,nombre,fecha,hora,idioma){
+  const rgpd=(RGPD_WA[idioma]||RGPD_WA.es).replace(/\n/g,'<br>');
+  const flags={es:'Español',ca:'Català',ro:'Română',ar:'العربية',fr:'Français',en:'English'};
+  const flagEmoji={es:'🇪🇸',ca:'🏴',ro:'🇷🇴',ar:'🇲🇦',fr:'🇫🇷',en:'🇬🇧'};
+  const hoy=new Date().toLocaleDateString('es-ES',{day:'2-digit',month:'long',year:'numeric'});
+  const css='body{font-family:Arial,sans-serif;max-width:740px;margin:30px auto;padding:20px;color:#1a2840;font-size:12px;line-height:1.6;}h1{font-size:16px;color:#1B4F8C;border-bottom:3px solid #1B4F8C;padding-bottom:8px;margin-bottom:16px;}h2{font-size:12px;color:#1B4F8C;margin:18px 0 6px;border-left:4px solid #1B4F8C;padding-left:10px;}table{width:100%;border-collapse:collapse;margin-bottom:14px;}td{padding:6px 10px;border:1px solid #ddd;vertical-align:top;}td:first-child{font-weight:700;background:#f4f7fc;width:36%;color:#1B4F8C;}.check{color:#16A34A;font-weight:700;}.firma-bloque{background:#f0f6ff;border:1px solid #1B4F8C;border-radius:6px;padding:12px;margin:16px 0;font-size:11px;line-height:1.6;}.firmas{display:flex;gap:40px;margin-top:14px;}.firma{flex:1;text-align:center;}.firma-linea{border-top:1px solid #333;margin-top:50px;padding-top:6px;font-size:10px;color:#444;}.legal-box{background:#fffbf0;border:1px solid #d4a017;border-radius:6px;padding:12px;margin:10px 0;font-size:11px;line-height:1.7;}.pie{text-align:center;margin-top:20px;font-size:10px;color:#999;border-top:1px solid #eee;padding-top:10px;}@media print{.no-print{display:none!important}}';
+  const body='<div style="font-size:11px;color:#666;margin-bottom:14px;"><strong>Construcciones Lance 2024 SL</strong> · luis@construccioneslance.com</div>'
+    +'<h1>Consentimiento Informado · Protección de Datos · Registro Horario · GPS</h1>'
+    +'<h2>Datos del operario</h2><table>'
+    +'<tr><td>Nombre completo</td><td><strong>'+nombre+'</strong></td></tr>'
+    +'<tr><td>DNI / NIE</td><td><strong>'+doc+'</strong></td></tr>'
+    +'<tr><td>Fecha de alta</td><td><strong>'+fecha+'</strong></td></tr>'
+    +'<tr><td>Hora</td><td><strong>'+hora+'</strong></td></tr>'
+    +'<tr><td>Idioma</td><td>'+flagEmoji[idioma]+' '+(flags[idioma]||idioma)+'</td></tr>'
+    +'<tr><td>RGPD informado</td><td><span class="check">✅ Sí — al recibir credenciales por WhatsApp</span></td></tr>'
+    +'<tr><td>Consentimiento GPS</td><td><span class="check">✅ Sí — aceptado en primera apertura de app</span></td></tr>'
+    +'<tr><td>Registro horario digital</td><td><span class="check">✅ Sí — informado y conforme</span></td></tr>'
+    +'</table>'
+    +'<h2>Texto de protección de datos (idioma del operario)</h2>'
+    +'<div style="background:#f8faff;border:1px solid #1B4F8C;border-radius:6px;padding:12px;font-size:11px;line-height:1.8;">'+rgpd+'</div>'
+    +'<h2>Marco legal aplicable</h2>'
+    +'<div class="legal-box"><strong>📌 Protección de Datos:</strong> Reglamento (UE) 2016/679 (RGPD) · Ley Orgánica 3/2018 LOPDGDD (BOE nº 294, 06/12/2018)<br><br><strong>📌 Registro Horario Digital:</strong> Real Decreto-ley 8/2019 · Real Decreto Registro Horario Digital 2026 (BOE nº 61, 12/03/2019)</div>'
+    +'<h2>Declaración</h2>'
+    +'<div class="firma-bloque">El/La trabajador/a <strong>'+nombre+'</strong>, con DNI/NIE <strong>'+doc+'</strong>, ha sido informado/a el <strong>'+fecha+'</strong> sobre el tratamiento de sus datos en ObraControl GPS de Construcciones Lance 2024 SL.<br><br>El consentimiento GPS queda registrado digitalmente en la primera apertura de la app. Validez: eIDAS art.25 · Ley 6/2020.</div>'
+    +'<div class="firmas"><div class="firma"><div class="firma-linea">Firma del trabajador/a<br><strong>'+nombre+'</strong><br>DNI/NIE: '+doc+'</div></div>'
+    +'<div class="firma"><div class="firma-linea">Sello y firma empresa<br><strong>Construcciones Lance 2024 SL</strong><br>Luis Campaña — Encargado</div></div></div>'
+    +'<div class="pie">ObraControl GPS · Construcciones Lance 2024 SL · luis@construccioneslance.com · Generado: '+hoy+'</div>'
+    +'<br><button class="no-print" onclick="window.print()" style="padding:12px 28px;background:#1B4F8C;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700;">🖨️ Imprimir / Guardar PDF</button>'
+    +'<button class="no-print" onclick="window.close()" style="padding:12px 20px;background:#f4f7fc;color:#1B4F8C;border:1px solid #1B4F8C;border-radius:8px;cursor:pointer;font-size:12px;margin-left:8px;">✕ Cerrar</button>';
+  const w=window.open('','_blank','width=820,height=1000');
+  w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Consentimiento — '+nombre+'</title><style>'+css+'</style></head><body>'+body+'</body></html>');
+  w.document.close();
+}
+function imprimirConsentimientoIdx(i){const c=_consentData[i];if(!c)return;imprimirConsentimiento(c.doc||'',c.nombre||'',c.fecha||'',c.hora||'',c.idioma||'es');}
+
+// ── CONSENTIMIENTOS ──
+let _consentData=[];
+function cargarConsentimientos(){
+  const tb=document.getElementById('consent-tbody');if(!tb)return;
+  tb.innerHTML='<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--text3)">⏳ Cargando...</td></tr>';
+  fetch(`${FB_URL}/consentimientos.json`).then(r=>r.json()).then(data=>{
+    if(!data||!Object.keys(data).length){
+      tb.innerHTML='<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--text3)">Sin consentimientos aún. Se generan al dar de alta operarios.</td></tr>';
+      return;
+    }
+    const flags={es:'🇪🇸',ca:'🏴',ro:'🇷🇴',ar:'🇲🇦',fr:'🇫🇷',en:'🇬🇧'};
+    _consentData=Object.values(data).sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
+    tb.innerHTML=_consentData.map((c,i)=>{
+      const rgpdOk=c.rgpd_aceptado===true;
+      const gpsOk=c.gps_aceptado===true;
+      const estado=c.estado==='pendiente_aceptacion'?'<span class="pill p-pend">⏳ Pendiente</span>':'<span class="pill p-in">✅ Aceptado</span>';
+      return '<tr>'
+        +'<td style="font-weight:600">'+(c.nombre||'—')+'</td>'
+        +'<td style="font-size:11px">'+(c.doc||'—')+'</td>'
+        +'<td>'+(c.fecha||'—')+'</td>'
+        +'<td>'+(c.hora||'—')+'</td>'
+        +'<td>'+(flags[c.idioma]||'🇪🇸')+' '+(c.idioma||'es')+'</td>'
+        +'<td>'+(rgpdOk?'<span class="pill p-in">✅</span>':estado)+'</td>'
+        +'<td>'+(gpsOk?'<span class="pill p-in">✅</span>':estado)+'</td>'
+        +'<td style="display:flex;gap:4px;">'
+        +'<button class="btn-edit" onclick="imprimirConsentimientoIdx('+i+')">🖨️</button>'
+        +'<button class="btn-danger" onclick="borrarConsentimiento(\''+( c.doc||'')+'\')">🗑️</button>'
+        +'</td></tr>';
+    }).join('');
+  }).catch(()=>{tb.innerHTML='<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--red)">Error al cargar.</td></tr>';});
+}
+
+function borrarConsentimiento(doc){
+  if(!doc||!confirm('¿Eliminar consentimiento de '+doc+'?'))return;
+  fetch(`${FB_URL}/consentimientos/${doc}.json`,{method:'DELETE'})
+    .then(()=>{showToast('✅ Eliminado','ok');cargarConsentimientos();})
+    .catch(()=>showToast('⚠️ Error','err'));
+}
+function borrarTodosConsentimientos(){
+  if(!confirm('¿Eliminar TODOS los consentimientos?'))return;
+  fetch(`${FB_URL}/consentimientos.json`,{method:'DELETE'})
+    .then(()=>{showToast('✅ Todos eliminados','ok');cargarConsentimientos();})
+    .catch(()=>showToast('⚠️ Error','err'));
 }
 
 let toastTimer;
