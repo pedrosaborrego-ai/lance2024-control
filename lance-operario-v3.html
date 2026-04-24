@@ -529,11 +529,21 @@ function checkPin(){
       const displayName=workerName.split(' ').slice(0,2).join(' ');
       document.getElementById('worker-badge').textContent='👷 '+displayName;
       goTo('s-app');applyAppLang();renderTasks();startClock();startGPS();
-      // ✅ BUG1 FIX: restaurar estado real desde Firebase al abrir
-      fetch(`${FB_URL}/operarios_activos/${workerDoc}.json`)
+      // ✅ BUG1 FIX: restaurar estado real buscando por DNI en todos los activos
+      fetch(`${FB_URL}/operarios_activos.json`)
         .then(r=>r.json())
-        .then(data=>{
-          if(data&&data.activo===true&&data.tipo==='entrada'){
+        .then(todos=>{
+          if(!todos) return;
+          // Buscar por clave directa O por campo doc
+          let data = todos[workerDoc];
+          if(!data){
+            // Buscar por campo doc dentro de cada registro
+            const entry = Object.values(todos).find(op=>
+              op && op.doc && op.doc.replace(/[^A-Z0-9]/gi,'').toUpperCase() === workerDoc
+            );
+            if(entry) data = entry;
+          }
+          if(data && data.activo===true && data.tipo==='entrada'){
             isIn=true;
             entryTime=data.hora||entryTime;
             const btn=document.getElementById('checkin-btn');
@@ -673,7 +683,21 @@ function fbSaveCheckin(type){
   if(type==='salida'){entryTime=null;localStorage.removeItem('lance_entry_time');}
   const key=workerDoc;
   fetch(`${FB_URL}/fichajes/${dateStr}/${key}.json`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).catch(e=>console.log('Firebase error:',e));
-  fetch(`${FB_URL}/operarios_activos/${key}.json`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({...data,activo:type==='entrada'})}).catch(e=>console.log('Firebase error:',e));
+  // ✅ Guardar en activos — también limpiar registros con clave diferente para este operario
+  const activoData={...data,activo:type==='entrada'};
+  fetch(`${FB_URL}/operarios_activos/${key}.json`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(activoData)}).catch(e=>console.log('Firebase error:',e));
+  // Si hay registros con clave diferente (ej: nombre en vez de DNI), marcarlos como inactivos
+  if(type==='salida'){
+    fetch(`${FB_URL}/operarios_activos.json`).then(r=>r.json()).then(todos=>{
+      if(!todos)return;
+      Object.entries(todos).forEach(([k,op])=>{
+        if(k!==key && op && op.doc && op.doc.replace(/[^A-Z0-9]/gi,'').toUpperCase()===key && op.activo===true){
+          fetch(`${FB_URL}/operarios_activos/${k}/activo.json`,{method:'PUT',headers:{'Content-Type':'application/json'},body:'false'}).catch(()=>{});
+          fetch(`${FB_URL}/operarios_activos/${k}/tipo.json`,{method:'PUT',headers:{'Content-Type':'application/json'},body:'"salida"'}).catch(()=>{});
+        }
+      });
+    }).catch(()=>{});
+  }
 }
 
 function toggleCheckin(){

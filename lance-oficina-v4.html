@@ -313,8 +313,8 @@ textarea.form-ctrl{resize:vertical;min-height:80px;}
           <div class="card-body">
             <input type="hidden" id="edit-id">
             <div class="form-row">
-              <div class="form-g"><label class="form-lbl">Nombre</label><input class="form-ctrl" id="g-nombre" type="text" placeholder="Nombre"></div>
-              <div class="form-g"><label class="form-lbl">Apellidos</label><input class="form-ctrl" id="g-apellidos" type="text" placeholder="Apellidos"></div>
+              <div class="form-g"><label class="form-lbl">Nombre</label><input class="form-ctrl" id="g-nombre" type="text" oninput="capitalizarCampo(this)" placeholder="Nombre"></div>
+              <div class="form-g"><label class="form-lbl">Apellidos</label><input class="form-ctrl" id="g-apellidos" type="text" oninput="capitalizarCampo(this)" placeholder="Apellidos"></div>
             </div>
             <div class="form-row">
               <div class="form-g"><label class="form-lbl">DNI</label><input class="form-ctrl" id="g-dni" type="text" placeholder="12345678A" maxlength="9"></div>
@@ -322,7 +322,7 @@ textarea.form-ctrl{resize:vertical;min-height:80px;}
             </div>
             <div class="form-row">
               <div class="form-g"><label class="form-lbl">📱 Teléfono WhatsApp</label><input class="form-ctrl" id="g-tel" type="tel" placeholder="+34 612 345 678"></div>
-              <div class="form-g"><label class="form-lbl">Obra asignada</label><input class="form-ctrl" id="g-obra" type="text" placeholder="Dirección de obra"></div>
+              <div class="form-g"><label class="form-lbl">Obra asignada</label><input class="form-ctrl" id="g-obra" type="text" oninput="capitalizarCampo(this)" placeholder="Dirección de obra"></div>
             </div>
             <div class="form-row">
               <div class="form-g">
@@ -647,6 +647,14 @@ function resetForm(){
   document.getElementById('gestion-title').textContent='➕ Alta de operario';
   document.getElementById('wa-generado').style.display='none';
   lastWorkerAdded=null;
+}
+
+// ✅ Capitalizar cada palabra automáticamente
+function capitalizarCampo(el){
+  const pos=el.selectionStart;
+  const val=el.value.replace(/\b\w/g,c=>c.toUpperCase());
+  el.value=val;
+  el.setSelectionRange(pos,pos);
 }
 
 function generarPinUnico(){
