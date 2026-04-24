@@ -522,6 +522,25 @@ function checkPin(){
       const displayName=workerName.split(' ').slice(0,2).join(' ');
       document.getElementById('worker-badge').textContent='👷 '+displayName;
       goTo('s-app');applyAppLang();renderTasks();startClock();startGPS();
+      // ✅ BUG1 FIX: restaurar estado real desde Firebase al abrir
+      fetch(`${FB_URL}/operarios_activos/${workerDoc}.json`)
+        .then(r=>r.json())
+        .then(data=>{
+          if(data&&data.activo===true&&data.tipo==='entrada'){
+            isIn=true;
+            entryTime=data.hora||entryTime;
+            const btn=document.getElementById('checkin-btn');
+            const lbl=document.getElementById('cb-label');
+            const ico=document.getElementById('cb-icon');
+            const st=document.getElementById('checkin-status');
+            btn.classList.add('in');btn.style.borderColor='var(--red)';btn.style.background='rgba(255,71,87,.07)';
+            lbl.innerHTML=t('checkout').replace('\n','<br>');ico.textContent='🔴';
+            st.innerHTML=`🔴 En obra desde ${data.hora||'—'}<br><span style="color:var(--red);font-size:10px">📍 ${data.ciudad||'Obra'}</span>`;
+            const uf=document.getElementById('ultimo-fichaje');
+            const uft=document.getElementById('ultimo-fichaje-txt');
+            if(uf&&uft){uf.style.display='block';uft.textContent=`✅ Entrada · ${data.hora||'—'} · ${data.ciudad||'Obra'}`;}
+          }
+        }).catch(()=>{});
     } else {
       document.getElementById('pin-err').textContent=t('pin_err');
       document.getElementById('login-pad').classList.add('shake');
