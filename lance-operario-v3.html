@@ -658,7 +658,8 @@ function loadObraInfo(){
   const obraCard=document.getElementById('obra-card');
   const obraNombre=document.getElementById('obra-nombre');
   if(obraCard){obraNombre.textContent=workerObra||'Obra asignada';obraCard.style.display='block';}
-  // BUG3 FIX: Leer coordenadas guardadas por la oficina en Firebase
+  // Leer coordenadas definidas por la oficina en Firebase
+  // SOLO se usa zona si la oficina la definió con el botón 📍 Zona
   fetch(`${FB_URL}/operarios_registro/${workerDoc}.json`)
     .then(r=>r.json())
     .then(reg=>{
@@ -668,24 +669,21 @@ function loadObraInfo(){
         const od=document.getElementById('obra-distancia');
         if(od) od.textContent='📍 Zona definida por la oficina';
         checkZonaObra();
-        return;
+      } else {
+        // Sin zona definida: no calcular, solo mostrar ubicación
+        const od=document.getElementById('obra-distancia');
+        if(od) od.textContent=`📍 ${myCity||'Ubicación detectada'} · Zona no configurada`;
+        window._enZona=null;
+        window._distObra=null;
+        // Mostrar tarjeta de obra sin zona
+        const ind=document.getElementById('geo-ind');
+        if(ind){ind.className='geo-ind unk';document.getElementById('geo-big').textContent='📍';document.getElementById('geo-label').textContent=myCity||t('geo_unk');}
       }
-      if(workerObra){
-        fetch('https://nominatim.openstreetmap.org/search?q='+encodeURIComponent(workerObra+', España')+'&format=json&limit=1')
-          .then(r=>r.json())
-          .then(res=>{
-            if(res&&res[0]){workerObraLat=parseFloat(res[0].lat);workerObraLng=parseFloat(res[0].lon);}
-            checkZonaObra();
-          }).catch(()=>{checkZonaObra();});
-      } else { checkZonaObra(); }
     }).catch(()=>{
-      if(workerObra){
-        fetch('https://nominatim.openstreetmap.org/search?q='+encodeURIComponent(workerObra+', España')+'&format=json&limit=1')
-          .then(r=>r.json()).then(res=>{
-            if(res&&res[0]){workerObraLat=parseFloat(res[0].lat);workerObraLng=parseFloat(res[0].lon);}
-            checkZonaObra();
-          }).catch(()=>{checkZonaObra();});
-      } else { checkZonaObra(); }
+      // Error de red: no calcular zona
+      const od=document.getElementById('obra-distancia');
+      if(od) od.textContent=`📍 ${myCity||'Ubicación detectada'}`;
+      window._enZona=null;window._distObra=null;
     });
 }
 
@@ -695,19 +693,26 @@ function checkZonaObra(){
   const obraDistEl=document.getElementById('obra-distancia');
   if(workerObraLat&&workerObraLng){
     const dist=calcDist(myLat,myLng,workerObraLat,workerObraLng);
+    // Validar: si dist > 100km las coordenadas son incorrectas
+    if(dist>100000){
+      console.warn('Coordenadas de obra inválidas, distancia='+dist);
+      workerObraLat=null;workerObraLng=null;
+      if(obraDistEl) obraDistEl.textContent=`📍 ${myCity||'Ubicación detectada'} · Zona no definida`;
+      window._enZona=null;window._distObra=null;
+      return;
+    }
     const enZona=dist<=ZONA_RADIO;
-    if(obraDistEl) obraDistEl.textContent=`${enZona?'✅':'⚠️'} ${enZona?'En zona de obra':'Fuera de zona'} · ${dist}m`;
+    if(obraDistEl) obraDistEl.textContent=`${enZona?'✅':'⚠️'} ${enZona?'En zona':'Fuera de zona'} · ${dist}m · ${myCity||''}`;
     const ind=document.getElementById('geo-ind');
     if(ind) ind.className='geo-ind '+(enZona?'ok':'bad');
     document.getElementById('geo-big').textContent=enZona?'✅':'⚠️';
-    document.getElementById('geo-label').textContent=enZona?t('geo_in'):t('geo_out')+` · ${dist}m de la obra`;
+    document.getElementById('geo-label').textContent=enZona?t('geo_in'):t('geo_out')+` · ${dist}m`;
     window._enZona=enZona;
     window._distObra=dist;
-    if(!enZona) showToast(`⚠️ Estás a ${dist}m de la obra asignada`,'err');
+    if(!enZona) showToast(`⚠️ Estás a ${dist}m de la obra`,'err');
   } else {
-    if(obraDistEl) obraDistEl.textContent=`📍 ${myCity||'Ubicación'} · ±${myAccuracy||'?'}m`;
-    window._enZona=null;
-    window._distObra=null;
+    if(obraDistEl) obraDistEl.textContent=`📍 ${myCity||'Ubicación detectada'} · Zona no definida desde consola`;
+    window._enZona=null;window._distObra=null;
   }
 }
 
@@ -761,13 +766,13 @@ function toggleCheckin(){
   const now=new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
   const loc=myCity||myProvince||'GPS activo';
   const tipo=isIn?'entrada':'salida';
-  const zonaInfo=window._enZona===false?` ⚠️ Fuera de zona (${window._distObra}m)`:window._enZona===true?' ✅ En zona':'';
+  const zonaInfo=window._enZona===true?' ✅ En zona':window._enZona===false?` ⚠️ ${window._distObra}m fuera de zona`:'';
   if(isIn){
     btn.classList.add('in');btn.style.borderColor='var(--red)';btn.style.background='rgba(255,71,87,.07)';
     lbl.innerHTML=t('checkout').replace('\
 ','<br>');ico.textContent='🔴';
     st.innerHTML=`✅ Entrada: ${now}${zonaInfo}<br><span style="color:var(--green);font-size:10px">📍 ${loc} · ±${myAccuracy||'?'}m</span>`;
-    showToast(t('toast_in')+(window._enZona===false?' ⚠️ Fuera de zona':''),'ok');
+    showToast(t('toast_in')+(window._enZona===true?' ✅ En zona':window._enZona===false?' ⚠️ Fuera de zona':''),'ok');
   } else {
     btn.classList.remove('in');btn.style.borderColor='var(--green)';btn.style.background='rgba(56,224,123,.07)';
     lbl.innerHTML=t('checkin').replace('\
