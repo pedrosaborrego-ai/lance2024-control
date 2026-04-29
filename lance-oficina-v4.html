@@ -348,7 +348,38 @@ textarea.form-ctrl{resize:vertical;min-height:80px;}
     <!-- RESUMEN JORNADA -->
     <div class="page" id="page-jornada">
       <div class="card">
-        <div class="card-hdr"><div class="card-title">📅 Resumen de jornada — Hoy</div><span id="jornada-date" style="font-size:10px;color:var(--text3)"></span></div>
+        <div class="card-hdr"><div class="card-title">📅 Resumen de jornada — Hoy</div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <button onclick="mostrarFichajeManual()" style="font-size:10px;background:var(--orange-l);border:1px solid rgba(232,98,26,.3);color:var(--orange);padding:5px 10px;border-radius:7px;cursor:pointer;font-weight:700;font-family:'Montserrat',sans-serif;">✏️ Fichaje manual</button>
+            <span id="jornada-date" style="font-size:10px;color:var(--text3)"></span></div></div>
+        <div id="fichaje-manual-panel" style="display:none;background:var(--orange-l);border:1px solid rgba(232,98,26,.25);border-radius:12px;padding:16px;margin-bottom:16px;">
+          <div style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;color:var(--orange);margin-bottom:12px;">✏️ FICHAJE MANUAL — Añadir/modificar hora</div>
+          <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:10px;align-items:end;">
+            <div>
+              <label class="form-lbl">Operario</label>
+              <select class="form-ctrl" id="fm-worker" style="border-color:rgba(232,98,26,.3);"></select>
+            </div>
+            <div>
+              <label class="form-lbl">Tipo</label>
+              <select class="form-ctrl" id="fm-tipo" style="border-color:rgba(232,98,26,.3);">
+                <option value="entrada">✅ Entrada</option>
+                <option value="salida">🔴 Salida</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-lbl">Hora</label>
+              <input class="form-ctrl" id="fm-hora" type="time" style="border-color:rgba(232,98,26,.3);">
+            </div>
+            <div>
+              <label class="form-lbl">Nota</label>
+              <input class="form-ctrl" id="fm-nota" type="text" placeholder="Médico, transporte..." style="border-color:rgba(232,98,26,.3);">
+            </div>
+            <div>
+              <button onclick="guardarFichajeManual()" style="padding:10px 16px;background:var(--orange);color:#fff;border:none;border-radius:9px;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;">Guardar</button>
+            </div>
+          </div>
+          <div style="margin-top:8px;font-size:10px;color:var(--text3);">ℹ️ El fichaje manual sobreescribe el fichaje del operario en Firebase para hoy.</div>
+        </div>
         <table class="jornada-table">
           <thead><tr><th>Operario</th><th>Entrada</th><th>Salida</th><th>Horas</th><th>Zona</th><th>Estado</th></tr></thead>
           <tbody id="jornada-tbody"></tbody>
@@ -569,6 +600,14 @@ textarea.form-ctrl{resize:vertical;min-height:80px;}
 <div class="toast" id="toast"></div>
 
 <script>
+function calcDist(lat1,lng1,lat2,lng2){
+  const R=6371000;
+  const dLat=(lat2-lat1)*Math.PI/180;
+  const dLng=(lng2-lng1)*Math.PI/180;
+  const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
+  return Math.round(R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)));
+}
+
 const FB_URL = 'https://lance-a99b4-default-rtdb.europe-west1.firebasedatabase.app';
 const APP_URL = 'https://obracontrol-tech.github.io/lance2024/lance-operario-v3.html';
 const ENCARGADO_WA = '+34629108645';
@@ -714,6 +753,8 @@ function showPage(name){
   if(name==='tareas')renderTaskLog();
   if(name==='gestion'){renderGestionList();renderPinTable();updateExtraSelect();}
   if(name==='extras')updateExtraSelect();
+  if(name==='consentimientos')cargarConsentimientos();
+  if(name==='jornada'){renderJornada();mostrarFichajeManual&&document.getElementById('fichaje-manual-panel')&&(document.getElementById('fichaje-manual-panel').style.display='none');}
 }
 
 // ── INIT ──
@@ -722,7 +763,7 @@ function initApp(){
   setTimeout(()=>{
     animKPI('kv-total',WORKERS.length);animKPI('kv-in',WORKERS.filter(w=>w.status==='in').length);
     animKPI('kv-alerts',0);animKPI('kv-extras',0);
-    renderTaskLog();updateExtraSelect();
+    renderTaskLog();updateExtraSelect();updateTaskSelect();
     const sel=document.getElementById('task-to');
     sel.innerHTML='<option value="all">Todos los operarios</option>';
     WORKERS.forEach(w=>{const doc=(w.dni||w.nie||'').replace(/[^A-Z0-9]/gi,'').toUpperCase();sel.innerHTML+=`<option value="${doc}">${w.nombre} ${w.apellidos}</option>`;});
@@ -738,19 +779,7 @@ function animKPI(id,target,dur=1300){
 }
 
 // ── JORNADA ──
-function renderJornada(){
-  const tb=document.getElementById('jornada-tbody');if(!tb)return;
-  const hoy=DAYS_CAP[new Date().getDay()];
-  const jor=JORNADA[hoy]||JORNADA['Lunes'];
-  tb.innerHTML=WORKERS.map(w=>{
-    const zonaCell=w.en_zona===true?'<span class="pill p-in">✅ En zona</span>':w.en_zona===false?`<span class="pill p-out">⚠️ ${Math.round(w.dist_obra||0)}m</span>`:'<span class="pill p-pend">—</span>';
-    let estadoLabel;
-    if(w.status==='pending')estadoLabel='<span style="font-size:10px;color:var(--red);font-weight:600">Sin fichar</span>';
-    else if(w.status==='in')estadoLabel='<span style="font-size:10px;color:var(--green);font-weight:600">En obra</span>';
-    else estadoLabel='<span style="font-size:10px;color:var(--amber);font-weight:600">Salida</span>';
-    return`<tr><td><div style="font-weight:600">${w.nombre} ${w.apellidos}</div></td><td style="font-weight:600">${w.arrival||'—'}</td><td style="color:var(--red)">${w.dep||'—'}</td><td style="font-family:'Montserrat';font-weight:800;color:var(--blue2)">${w.h}h</td><td>${zonaCell}</td><td>${estadoLabel}</td></tr>`;
-  }).join('');
-}
+
 
 // ── OPERARIOS ──
 function renderWorkers(){
@@ -867,6 +896,28 @@ function saveWorker(){
         showToast('🔐 PIN cambiado — el operario deberá crear uno nuevo al abrir la app','inf');
       } else {
         showToast('✅ Operario actualizado','ok');
+      }
+      // Si cambió la obra y tenemos coordenadas, actualizar zona en activos
+      if(obraChanged&&w.obra_lat&&w.obra_lng){
+        // Actualizar obra_lat/obra_lng en el registro de activos del operario
+        const docKey=(w.dni||w.nie||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+        if(docKey){
+          // Leer activo actual y recalcular zona
+          fetch(`${FB_URL}/operarios_activos/${docKey}.json`)
+            .then(r=>r.json())
+            .then(activo=>{
+              if(!activo||!activo.lat||!activo.lng)return;
+              const dist=calcDist(activo.lat,activo.lng,w.obra_lat,w.obra_lng);
+              const enZona=dist<=500;
+              fetch(`${FB_URL}/operarios_activos/${docKey}.json`,{
+                method:'PATCH',
+                headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({en_zona:enZona,dist_obra:dist,obra_lat:w.obra_lat,obra_lng:w.obra_lng})
+              }).then(()=>{
+                showToast(enZona?`✅ ${w.nombre} ahora está EN ZONA (${dist}m)`:`📍 Zona actualizada — ${w.nombre} a ${dist}m`,'ok');
+              }).catch(()=>{});
+            }).catch(()=>{});
+        }
       }
     }
   } else {
@@ -1270,6 +1321,102 @@ function borrarTodosConsentimientos(){
   if(!confirm('¿Eliminar TODOS los consentimientos?'))return;
   fetch(`${FB_URL}/consentimientos.json`,{method:'DELETE'})
     .then(()=>{showToast('✅ Todos eliminados','ok');cargarConsentimientos();})
+    .catch(()=>showToast('⚠️ Error','err'));
+}
+
+// ── FICHAJE MANUAL ──
+function mostrarFichajeManual(){
+  const panel=document.getElementById('fichaje-manual-panel');
+  if(!panel)return;
+  const visible=panel.style.display!=='none';
+  panel.style.display=visible?'none':'block';
+  if(!visible){
+    // Rellenar selector de operarios
+    const sel=document.getElementById('fm-worker');
+    if(sel){sel.innerHTML=WORKERS.map(w=>`<option value="${(w.dni||w.nie||'').replace(/[^A-Z0-9]/gi,'').toUpperCase()}">${w.nombre} ${w.apellidos}</option>`).join('');}
+    // Poner hora actual por defecto
+    const now=new Date();
+    const hEl=document.getElementById('fm-hora');
+    if(hEl)hEl.value=now.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'}).replace(':',':');
+  }
+}
+
+function guardarFichajeManual(){
+  const docKey=document.getElementById('fm-worker')?.value;
+  const tipo=document.getElementById('fm-tipo')?.value;
+  const hora=document.getElementById('fm-hora')?.value;
+  const nota=document.getElementById('fm-nota')?.value||'';
+  if(!docKey||!hora){showToast('Selecciona operario y hora','err');return;}
+  const w=WORKERS.find(x=>(x.dni||x.nie||'').replace(/[^A-Z0-9]/gi,'').toUpperCase()===docKey);
+  const nombre=w?`${w.nombre} ${w.apellidos}`:'Operario';
+  const now=new Date();
+  const dateStr=now.toISOString().split('T')[0];
+  // Construir datos del fichaje
+  const fichajeData={
+    nombre,doc:docKey,tipo,hora,
+    hora_entrada:tipo==='entrada'?hora:(w?.arrival||null),
+    fecha:dateStr,
+    ciudad:nota||'Fichaje manual consola',
+    provincia:'',lat:0,lng:0,
+    timestamp:now.getTime(),
+    en_zona:true,dist_obra:0,
+    manual:true,nota_manual:nota
+  };
+  // Actualizar en Firebase activos
+  const actData={...fichajeData,activo:tipo==='entrada'};
+  fetch(`${FB_URL}/operarios_activos/${docKey}.json`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(actData)})
+    .then(()=>{
+      // También guardar en fichajes
+      fetch(`${FB_URL}/fichajes/${dateStr}/${docKey}_manual.json`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(fichajeData)}).catch(()=>{});
+      // Actualizar worker local
+      if(w){
+        if(tipo==='entrada'){w.arrival=hora;w.status='in';w.en_zona=true;w.dist_obra=0;}
+        else{w.dep=hora;w.status='out';}
+        saveW();
+      }
+      showToast(`✅ Fichaje manual guardado: ${nombre} — ${tipo} ${hora}`,'ok');
+      document.getElementById('fichaje-manual-panel').style.display='none';
+      document.getElementById('fm-nota').value='';
+      renderJornada();
+    }).catch(()=>showToast('⚠️ Error al guardar','err'));
+}
+
+// ── UBICACIÓN EXACTA EN JORNADA ──
+function renderJornada(){
+  const tb=document.getElementById('jornada-tbody');if(!tb)return;
+  tb.innerHTML=WORKERS.map(w=>{
+    const zonaCell=w.en_zona===true
+      ?`<span class="pill p-in">✅ En zona</span>`
+      :w.en_zona===false
+        ?`<span class="pill p-out" title="${w.ciudad_gps||''}">⚠️ ${Math.round(w.dist_obra||0)}m${w.ciudad_gps?' · '+w.ciudad_gps.split(',')[0]:''}</span>`
+        :'<span class="pill p-pend">—</span>';
+    let estadoLabel;
+    if(w.status==='pending')estadoLabel='<span style="font-size:10px;color:var(--red);font-weight:600">Sin fichar</span>';
+    else if(w.status==='in')estadoLabel='<span style="font-size:10px;color:var(--green);font-weight:600">En obra</span>';
+    else estadoLabel='<span style="font-size:10px;color:var(--amber);font-weight:600">Salida</span>';
+    const ubicacion=w.ciudad_gps?`<div style="font-size:10px;color:var(--text3)">${w.ciudad_gps}</div>`:'';
+    return`<tr>
+      <td><div style="font-weight:600">${w.nombre} ${w.apellidos}</div>${ubicacion}</td>
+      <td style="font-weight:600">${w.arrival||'—'}</td>
+      <td style="color:var(--red)">${w.dep||'—'}</td>
+      <td style="font-family:'Montserrat';font-weight:800;color:var(--blue2)">${w.h}h</td>
+      <td>${zonaCell}</td>
+      <td>${estadoLabel}${w.manual?'<div style="font-size:9px;color:var(--orange);margin-top:2px;">✏️ Manual</div>':''}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── UPDATE TASK SELECT ──
+function updateTaskSelect(){
+  const sel=document.getElementById('task-to');if(!sel)return;
+  sel.innerHTML='<option value="all">Todos los operarios</option>';
+  WORKERS.forEach(w=>{const doc=(w.dni||w.nie||'').replace(/[^A-Z0-9]/gi,'').toUpperCase();sel.innerHTML+=`<option value="${doc}">${w.nombre} ${w.apellidos}</option>`;});
+}
+
+function borrarTodasTareas(){
+  if(!confirm('¿Eliminar TODAS las tareas enviadas?'))return;
+  fetch(`${FB_URL}/tareas.json`,{method:'DELETE'})
+    .then(()=>{showToast('✅ Tareas eliminadas','ok');renderTaskLog();})
     .catch(()=>showToast('⚠️ Error','err'));
 }
 
