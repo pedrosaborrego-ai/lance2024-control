@@ -375,6 +375,12 @@ textarea.form-ctrl{resize:vertical;min-height:80px;}
               <input class="form-ctrl" id="fm-hora" type="time" style="border-color:rgba(232,98,26,.3);">
             </div>
             <div>
+              <label class="form-lbl">Obra</label>
+              <select class="form-ctrl" id="fm-obra" style="border-color:rgba(232,98,26,.3);">
+                <option value="">— Obra actual —</option>
+              </select>
+            </div>
+            <div>
               <label class="form-lbl">Nota</label>
               <input class="form-ctrl" id="fm-nota" type="text" placeholder="Médico, transporte..." style="border-color:rgba(232,98,26,.3);">
             </div>
@@ -1404,6 +1410,14 @@ function mostrarFichajeManual(){
     // Rellenar selector de operarios
     const sel=document.getElementById('fm-worker');
     if(sel){sel.innerHTML=WORKERS.map(w=>`<option value="${(w.dni||w.nie||'').replace(/[^A-Z0-9]/gi,'').toUpperCase()}">${w.nombre} ${w.apellidos}</option>`).join('');}
+    // Rellenar selector de obras
+    const selObra=document.getElementById('fm-obra');
+    if(selObra){
+      selObra.innerHTML='<option value="">— Obra actual —</option>';
+      OBRAS.filter(o=>o.estado!=='terminada').forEach(o=>{
+        selObra.innerHTML+=`<option value="${o.id}">${o.nombre}${o.cliente?' · '+o.cliente:''}</option>`;
+      });
+    }
     // Poner hora actual por defecto
     const now=new Date();
     const hEl=document.getElementById('fm-hora');
@@ -1422,15 +1436,23 @@ function guardarFichajeManual(){
   const now=new Date();
   const dateStr=now.toISOString().split('T')[0];
   // Construir datos del fichaje
+  const obraId=document.getElementById('fm-obra')?.value;
+  const obraSelec=obraId?OBRAS.find(o=>o.id===obraId):null;
+  const ciudadFichaje=obraSelec?obraSelec.nombre:(nota||'Fichaje manual consola');
   const fichajeData={
     nombre,doc:docKey,tipo,hora,
     hora_entrada:tipo==='entrada'?hora:(w?.arrival||null),
     fecha:dateStr,
-    ciudad:nota||'Fichaje manual consola',
-    provincia:'',lat:0,lng:0,
+    ciudad:ciudadFichaje,
+    provincia:'',
+    lat:obraSelec?.lat||0,
+    lng:obraSelec?.lng||0,
     timestamp:now.getTime(),
-    en_zona:true,dist_obra:0,
-    manual:true,nota_manual:nota
+    en_zona:obraSelec?true:true,
+    dist_obra:0,
+    manual:true,
+    nota_manual:nota||obraSelec?.nombre||'',
+    obra_id:obraId||''
   };
   // Actualizar en Firebase activos
   const actData={...fichajeData,activo:tipo==='entrada'};
@@ -1438,13 +1460,21 @@ function guardarFichajeManual(){
     .then(()=>{
       // También guardar en fichajes
       fetch(`${FB_URL}/fichajes/${dateStr}/${docKey}_manual.json`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(fichajeData)}).catch(()=>{});
+      // Si cambia la obra, actualizar en registro del operario
+      if(obraSelec&&w){
+        w.obra=obraSelec.direccion||obraSelec.nombre;
+        if(obraSelec.lat&&obraSelec.lng){w.obra_lat=obraSelec.lat;w.obra_lng=obraSelec.lng;}
+        fbSyncWorker(w,false);
+      }
       // Actualizar worker local
       if(w){
         if(tipo==='entrada'){w.arrival=hora;w.status='in';w.en_zona=true;w.dist_obra=0;}
         else{w.dep=hora;w.status='out';}
+        if(obraSelec)w.ciudad_gps=obraSelec.nombre;
         saveW();
       }
-      showToast(`✅ Fichaje manual guardado: ${nombre} — ${tipo} ${hora}`,'ok');
+      const obraMsg=obraSelec?` · ${obraSelec.nombre}`:'';
+      showToast(`✅ Fichaje manual: ${nombre} — ${tipo} ${hora}${obraMsg}`,'ok');
       document.getElementById('fichaje-manual-panel').style.display='none';
       document.getElementById('fm-nota').value='';
       renderJornada();
