@@ -796,7 +796,7 @@ function renderWorkers(){
     <td style="font-size:11px;color:var(--text3)">${w.obra||'—'}</td>
     <td><span style="font-family:'Montserrat';font-weight:800;font-size:16px;color:var(--blue2);letter-spacing:3px">${w.pin}</span></td>
     <td>${sb[w.status]||'—'}</td>
-    <td>${w.en_zona===true?'<span class="pill p-in">✅ En zona</span>':w.en_zona===false?`<span class="pill p-warn">⚠️ ${Math.round(w.dist_obra||0)}m</span>`:'<span class="pill p-pend">—</span>'}</td>
+    <td>${(()=>{const c=w.ciudad_gps?w.ciudad_gps.split(',')[0]:'';const dok=(w.dist_obra||0)<100000;return w.en_zona===true?`<span class="pill p-in">✅ En zona${c?' · '+c:''}</span>`:w.en_zona===false&&dok?`<span class="pill p-warn">⚠️ ${Math.round(w.dist_obra||0)}m${c?' · '+c:''}</span>`:w.en_zona===false?`<span class="pill p-pend">📍 ${c||'—'}</span>`:'<span class="pill p-pend">—</span>';})()}</td>
     <td><button class="btn-edit" onclick="editWorker(${w.id})">✏️</button> <button class="btn-danger" onclick="deleteWorker(${w.id})">🗑️</button></td>
   </tr>`).join('');
 }
@@ -1385,11 +1385,15 @@ function guardarFichajeManual(){
 function renderJornada(){
   const tb=document.getElementById('jornada-tbody');if(!tb)return;
   tb.innerHTML=WORKERS.map(w=>{
+    const ciudad=w.ciudad_gps?w.ciudad_gps.split(',')[0]:'';
+    const distOk=(w.dist_obra||0)<100000;
     const zonaCell=w.en_zona===true
-      ?`<span class="pill p-in">✅ En zona</span>`
-      :w.en_zona===false
-        ?`<span class="pill p-out" title="${w.ciudad_gps||''}">⚠️ ${Math.round(w.dist_obra||0)}m${w.ciudad_gps?' · '+w.ciudad_gps.split(',')[0]:''}</span>`
-        :'<span class="pill p-pend">—</span>';
+      ?`<span class="pill p-in">✅ En zona${ciudad?' · '+ciudad:''}</span>`
+      :w.en_zona===false&&distOk
+        ?`<span class="pill p-out">⚠️ ${Math.round(w.dist_obra||0)}m${ciudad?' · '+ciudad:''}</span>`
+        :w.en_zona===false
+          ?`<span class="pill p-pend" title="Zona no definida">📍 ${ciudad||'—'}</span>`
+          :'<span class="pill p-pend">—</span>';
     let estadoLabel;
     if(w.status==='pending')estadoLabel='<span style="font-size:10px;color:var(--red);font-weight:600">Sin fichar</span>';
     else if(w.status==='in')estadoLabel='<span style="font-size:10px;color:var(--green);font-weight:600">En obra</span>';
